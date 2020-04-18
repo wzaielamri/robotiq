@@ -10,16 +10,16 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/robotiq_arg2f_base_link_fine.stl" />
+          <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/visual/robotiq_arg2f_base_link.stl" />
         </geometry>
         <material name="">
           <color rgba="0.1 0.1 0.1 1" />
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 ${pi / 2}" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/robotiq_arg2f_base_link_coarse.stl" />
+          <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/collision/robotiq_arg2f_base_link.stl" />
         </geometry>
       </collision>
     </link>
@@ -29,12 +29,14 @@
     <xacro:outer_finger_joint prefix="${prefix}" fingerprefix="${fingerprefix}"/>
     <xacro:inner_knuckle_joint prefix="${prefix}" fingerprefix="${fingerprefix}" reflect="${reflect}"/>
     <xacro:inner_finger_joint prefix="${prefix}" fingerprefix="${fingerprefix}"/>
+    <xacro:inner_finger_pad_joint prefix="${prefix}" fingerprefix="${fingerprefix}"/>
   </xacro:macro>
 
   <xacro:macro name="finger_links" params="prefix fingerprefix stroke">
     <xacro:outer_knuckle prefix="${prefix}" fingerprefix="${fingerprefix}" stroke="${stroke}"/>
     <xacro:outer_finger prefix="${prefix}" fingerprefix="${fingerprefix}" stroke="${stroke}"/>
     <xacro:inner_finger prefix="${prefix}" fingerprefix="${fingerprefix}" stroke="${stroke}"/>
+    <xacro:inner_finger_pad prefix="${prefix}" fingerprefix="${fingerprefix}"/>
     <xacro:inner_knuckle prefix="${prefix}" fingerprefix="${fingerprefix}" stroke="${stroke}"/>
   </xacro:macro>
 </robot>
