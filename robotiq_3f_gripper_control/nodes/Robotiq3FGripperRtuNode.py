@@ -11,25 +11,25 @@ import rospy
 import robotiq_3f_gripper_control.baseRobotiq3FGripper
 import robotiq_modbus_rtu.comModbusRtu
 import sys
-from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotInput as inputMsg
-from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput as outputMsg
+from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotInput
+from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput
 
 
-def mainLoop(device):
+def mainLoop(address):
     # Gripper is a 3F gripper with a TCP connection
     gripper = robotiq_3f_gripper_control.baseRobotiq3FGripper.robotiqbaseRobotiq3FGripper()
     gripper.client = robotiq_modbus_rtu.comModbusRtu.communication(retry=True)
 
     # We connect to the address received as an argument
-    gripper.client.connectToDevice(device)
+    gripper.client.connectToDevice(address)
 
     rospy.init_node('robotiq3FGripper')
 
     # The Gripper status is published on the topic named 'Robotiq3FGripperRobotInput'
-    pub = rospy.Publisher('Robotiq3FGripperRobotInput', inputMsg, queue_size=1)
+    pub = rospy.Publisher('Robotiq3FGripperRobotInput', Robotiq3FGripperRobotInput, queue_size=1)
 
     # The Gripper command is received from the topic named 'Robotiq3FGripperRobotOutput'
-    rospy.Subscriber('Robotiq3FGripperRobotOutput', outputMsg, gripper.refreshCommand)
+    rospy.Subscriber('Robotiq3FGripperRobotOutput', Robotiq3FGripperRobotOutput, gripper.refreshCommand)
 
     # We loop
     while not rospy.is_shutdown():
