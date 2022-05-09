@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """@package docstring
 ROS node for controling a Robotiq S-Model gripper using the Modbus RTU protocol.
@@ -7,15 +7,12 @@ The script takes as an argument the device address of the gripper (e.g. /dev/tty
 Robotiq3FGripperTcpNode.
 """
 
-import roslib; roslib.load_manifest('robotiq_3f_gripper_control')
-roslib.load_manifest('robotiq_modbus_tcp')
 import rospy
 import robotiq_3f_gripper_control.baseRobotiq3FGripper
 import robotiq_modbus_rtu.comModbusRtu
-import os, sys
+import sys
 from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotInput as inputMsg
 from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput as outputMsg
-
 
 
 def mainLoop(device):
@@ -56,9 +53,3 @@ if __name__ == '__main__':
         mainLoop(sys.argv[1])
     except rospy.ROSInterruptException:
         pass
-
-if __name__ == '__main__':
-    try:
-        # TODO: Add verification that the argument is a valid device
-        mainLoop(sys.argv[1])
-    except rospy.ROSInterruptException: pass
