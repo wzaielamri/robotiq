@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 
 # Software License Agreement (BSD License)
@@ -43,26 +43,23 @@ This serves as an example for publishing messages on the 'Robotiq3FGripperRobotO
 """
 
 from __future__ import print_function
-
-import roslib;
-
-roslib.load_manifest('robotiq_3f_gripper_control')
 import rospy
 from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput
+from six.moves import input
 
 
 def genCommand(char, command):
     """Update the command according to the character entered by the user."""
 
     if char == 'a':
-        command = Robotiq3FGripperRobotOutput();
+        command = Robotiq3FGripperRobotOutput()
         command.rACT = 1
         command.rGTO = 1
         command.rSPA = 255
         command.rFRA = 150
 
     if char == 'r':
-        command = Robotiq3FGripperRobotOutput();
+        command = Robotiq3FGripperRobotOutput()
         command.rACT = 0
 
     if char == 'c':
@@ -161,7 +158,7 @@ def askForCommand(command):
 
     strAskForCommand += '-->'
 
-    return raw_input(strAskForCommand)
+    return input(strAskForCommand)
 
 
 def publisher():
@@ -171,7 +168,7 @@ def publisher():
 
     pub = rospy.Publisher('Robotiq3FGripperRobotOutput', Robotiq3FGripperRobotOutput)
 
-    command = Robotiq3FGripperRobotOutput();
+    command = Robotiq3FGripperRobotOutput()
 
     while not rospy.is_shutdown():
         command = genCommand(askForCommand(command), command)

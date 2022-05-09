@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Software License Agreement (BSD License)
 #
@@ -41,10 +41,6 @@ ROS node for controling a Robotiq 3F gripper gripper using the Modbus TCP protoc
 The script takes as an argument the IP address of the gripper. It initializes a baseRobotiq3FGripper object and adds a comModbusTcp client to it. It then loops forever, reading the gripper status and updating its command. The gripper status is published on the 'Robotiq3FGripperRobotInput' topic using the 'Robotiq3FGripper_robot_input' msg type. The node subscribes to the 'Robotiq3FGripperRobotOutput' topic for new commands using the 'Robotiq3FGripper_robot_output' msg type. Examples are provided to control the gripper (Robotiq3FGripperSimpleController.py) and interpreting its status (Robotiq3FGripperStatusListener.py).
 """
 
-import roslib;
-
-roslib.load_manifest('robotiq_3f_gripper_control')
-roslib.load_manifest('robotiq_modbus_tcp')
 import rospy
 import robotiq_3f_gripper_control.baseRobotiq3FGripper
 import robotiq_modbus_tcp.comModbusTcp

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Software License Agreement (BSD License)
 #
@@ -42,10 +42,6 @@ This serves as an example for receiving messages from the 'Robotiq3FGripperRobot
 """
 
 from __future__ import print_function
-
-import roslib;
-
-roslib.load_manifest('robotiq_3f_gripper_control')
 import rospy
 from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotInput
 
