@@ -24,7 +24,7 @@ _logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------#
 class BaseModbusClient(ModbusClientMixin):
     """
-    Inteface for a modbus synchronous client. Defined here are all the
+    Interface for a modbus synchronous client. Defined here are all the
     methods for performing the related request methods.  Derived classes
     simply need to implement the transport methods and set the correct
     framer.
