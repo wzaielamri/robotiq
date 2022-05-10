@@ -8,16 +8,15 @@ from pymodbus.interfaces import IModbusFramer
 from pymodbus.utilities import checkCRC, computeCRC
 
 
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
 # Modbus RTU Message
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
 class ModbusRtuFramer(IModbusFramer):
-    """
-    Modbus RTU Frame controller::
+    """Modbus RTU Frame controller.
         [ Start Wait ] [Address ][ Function Code] [ Data ][ CRC ][  End Wait  ]
           3.5 chars     1b         1b               Nb      2b      3.5 chars
-    Wait refers to the amount of time required to transmist at least x many
-    characters.  In this case it is 3.5 characters.  Also, if we recieve a
+    Wait refers to the amount of time required to transmit at least x many
+    characters.  In this case it is 3.5 characters.  Also, if we receive a
     wait of 1.5 characters at any point, we must trigger an error message.
     Also, it appears as though this message is little endian. The logic is
     simplified as the following::
@@ -41,7 +40,7 @@ class ModbusRtuFramer(IModbusFramer):
     """
 
     def __init__(self, decoder):
-        """ Initializes a new instance of the framer
+        """Initialize a new instance of the framer.
         :param decoder: The decoder factory implementation to use
         """
         self.__buffer = b''
@@ -51,13 +50,12 @@ class ModbusRtuFramer(IModbusFramer):
         self.__min_frame_size = 4
         self.decoder = decoder
 
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     # Private Helper Functions
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     def checkFrame(self):
-        """
-        Check if the next frame is available. Return True if we were
-        successful.
+        """Check if the next frame is available.
+        Return True if we were successful.
         """
         try:
             self.populateHeader()
@@ -70,7 +68,7 @@ class ModbusRtuFramer(IModbusFramer):
             return False
 
     def advanceFrame(self):
-        """ Skip over the current framed message
+        """Skip over the current framed message.
         This allows us to skip over the current message after we have processed
         it or determined that it contains an error. It also has to reset the
         current frame header handle
@@ -78,8 +76,8 @@ class ModbusRtuFramer(IModbusFramer):
         self.__buffer = self.__buffer[self.__header['len']:]
         self.__header = {}
 
-    def resetFrame(self):
-        """ Reset the entire message frame.
+    def resetFrame(self):  # pylint: disable=invalid-name
+        """Reset the entire message frame.
         This allows us to skip over errors that may be in the stream.
         It is hard to know if we are simply out of sync or if there is
         an error in the stream as we have no way to check the start or
@@ -90,15 +88,15 @@ class ModbusRtuFramer(IModbusFramer):
         self.__header = {}
 
     def isFrameReady(self):
-        """ Check if we should continue decode logic
+        """Check if we should continue decode logic.
         This is meant to be used in a while loop in the decoding phase to let
         the decoder know that there is still data in the buffer.
         :returns: True if ready, False otherwise
         """
         return len(self.__buffer) > self.__hsize
 
-    def populateHeader(self):
-        """ Try to set the headers `uid`, `len` and `crc`.
+    def populateHeader(self):  # pylint: disable=invalid-name
+        """Try to set the headers `uid`, `len` and `crc`.
         This method examines `self.__buffer` and writes meta
         information into `self.__header`. It calculates only the
         values for headers that are not already in the dictionary.
@@ -118,15 +116,13 @@ class ModbusRtuFramer(IModbusFramer):
         self.__header['crc'] = data[size - 2:size]
 
     def addToFrame(self, message):
-        """
-        This should be used before the decoding while loop to add the received
-        data to the buffer handle.
+        """Add the received data to the buffer handle.
         :param message: The most recent packet
         """
         self.__buffer += message
 
     def getFrame(self):
-        """ Get the next frame from the buffer
+        """Get the next frame from the buffer.
         :returns: The frame data or ''
         """
         start = self.__hsize
@@ -134,25 +130,25 @@ class ModbusRtuFramer(IModbusFramer):
         buffer = self.__buffer[start:end]
         if end > 0:
             return buffer
-        return ''
+        return b''
 
     def populateResult(self, result):
-        """ Populates the modbus result header
+        """Populate the modbus result header.
         The serial packets do not have any header information
         that is copied.
         :param result: The response packet
         """
         result.unit_id = self.__header['uid']
 
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     # Public Member Functions
-    # -----------------------------------------------------------------------#
-    def processIncomingPacket(self, data, callback):
-        """ The new packet processing pattern
+    # ----------------------------------------------------------------------- #
+    def processIncomingPacket(self, data, callback):  # pylint: disable=arguments-differ
+        """Process new packet pattern.
         This takes in a new request packet, adds it to the current
         packet stream, and performs framing on it. That is, checks
         for complete messages, and once found, will process all that
-        exist.  This handles the case when we read N + 1 or 1 / N
+        exist.  This handles the case when we read N + 1 or 1 // N
         messages at a time instead of 1.
         The processed and decoded messages are pushed to the callback
         function to process and send.
@@ -172,10 +168,12 @@ class ModbusRtuFramer(IModbusFramer):
                 self.resetFrame()  # clear possible errors
 
     def buildPacket(self, message):
-        """ Creates a ready to send modbus packet
+        """Create a ready to send modbus packet.
         :param message: The populated request/response to send
         """
         data = message.encode()
-        packet = struct.pack('>BB', message.unit_id, message.function_code) + data
+        packet = struct.pack('>BB',
+                             message.unit_id,
+                             message.function_code) + data
         packet += struct.pack(">H", computeCRC(packet))
         return packet

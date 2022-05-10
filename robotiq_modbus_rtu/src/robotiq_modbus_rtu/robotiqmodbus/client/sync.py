@@ -1,5 +1,6 @@
+"""Sync client."""
+import logging
 import serial
-
 from pymodbus.constants import Defaults
 from pymodbus.factory import ClientDecoder
 from pymodbus.exceptions import NotImplementedException, ParameterException
@@ -11,23 +12,22 @@ from pymodbus.transaction import ModbusAsciiFramer
 from .robotiqrtuframer import ModbusRtuFramer
 from pymodbus.client.common import ModbusClientMixin
 
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
 # Logging
-# ---------------------------------------------------------------------------#
-import logging
-
+# --------------------------------------------------------------------------- #
 _logger = logging.getLogger(__name__)
 
-
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
 # The Synchronous Clients
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
+
+
 class BaseModbusClient(ModbusClientMixin):
-    """
-    Interface for a modbus synchronous client. Defined here are all the
-    methods for performing the related request methods.  Derived classes
-    simply need to implement the transport methods and set the correct
-    framer.
+    """Interface for a modbus synchronous client.
+
+    Defined here are all the methods for performing the related request
+    methods.  Derived classes simply need to implement the transport
+    methods and set the correct framer.
     """
 
     def __init__(self, framer):
@@ -41,42 +41,42 @@ class BaseModbusClient(ModbusClientMixin):
         else:
             self.transaction = FifoTransactionManager(self)
 
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     # Client interface
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     def connect(self):
-        """ Connect to the modbus remote host
+        """Connect to the modbus remote host.
 
         :returns: True if connection succeeded, False otherwise
         """
         raise NotImplementedException("Method not implemented by derived class")
 
     def close(self):
-        """ Closes the underlying socket connection
-        """
+        """Close the underlying socket connection."""
         pass
 
-    def _send(self, request):
-        """ Sends data on the underlying socket
+    def _send(self, request):  # pylint: disable=no-self-use
+        """Send data on the underlying socket.
 
         :param request: The encoded request to send
         :return: The number of bytes written
         """
         raise NotImplementedException("Method not implemented by derived class")
 
-    def _recv(self, size):
-        """ Reads data from the underlying descriptor
+    def _recv(self, size):  # pylint: disable=no-self-use
+        """Read data from the underlying descriptor.
 
         :param size: The number of bytes to read
         :return: The bytes read
         """
         raise NotImplementedException("Method not implemented by derived class")
 
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     # Modbus client methods
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     def execute(self, request=None):
-        """
+        """Execute.
+
         :param request: The request to process
         :returns: The result of the request execution
         """
@@ -84,11 +84,11 @@ class BaseModbusClient(ModbusClientMixin):
             raise ConnectionException("Failed to connect[%s]" % (self.__str__()))
         return self.transaction.execute(request)
 
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     # The magic methods
-    # -----------------------------------------------------------------------#
+    # ----------------------------------------------------------------------- #
     def __enter__(self):
-        """ Implement the client with enter block
+        """Implement the client with enter block.
 
         :returns: The current instance of the client
         """
@@ -97,26 +97,27 @@ class BaseModbusClient(ModbusClientMixin):
         return self
 
     def __exit__(self, klass, value, traceback):
-        """ Implement the client with exit block """
+        """Implement the client with exit block."""
         self.close()
 
     def __str__(self):
-        """ Builds a string representation of the connection
+        """Build a string representation of the connection.
 
         :returns: The string representation
         """
         return "Null Transport"
 
 
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
 # Modbus Serial Client Transport Implementation
-# ---------------------------------------------------------------------------#
-class ModbusSerialClient(BaseModbusClient):
-    """ Implementation of a modbus serial client
-    """
+# --------------------------------------------------------------------------- #
+
+
+class ModbusSerialClient(BaseModbusClient):  # pylint: disable=too-many-instance-attributes
+    """Implementation of a modbus serial client."""
 
     def __init__(self, method='ascii', **kwargs):
-        """ Initialize a serial client instance
+        """Initialize a serial client instance.
 
         The methods to connect are::
 
@@ -145,7 +146,7 @@ class ModbusSerialClient(BaseModbusClient):
 
     @staticmethod
     def __implementation(method):
-        """ Returns the requested framer
+        """Return the requested framer.
 
         :method: The serial framer to instantiate
         :returns: The requested serial framer
@@ -153,16 +154,16 @@ class ModbusSerialClient(BaseModbusClient):
         method = method.lower()
         if method == 'ascii':
             return ModbusAsciiFramer(ClientDecoder())
-        elif method == 'rtu':
+        if method == 'rtu':
             return ModbusRtuFramer(ClientDecoder())
-        elif method == 'binary':
+        if method == 'binary':
             return ModbusBinaryFramer(ClientDecoder())
-        elif method == 'socket':
+        if method == 'socket':
             return ModbusSocketFramer(ClientDecoder())
         raise ParameterException("Invalid framer method requested")
 
     def connect(self):
-        """ Connect to the modbus tcp server
+        """Connect to the modbus serial server.
 
         :returns: True if connection succeeded, False otherwise
         """
@@ -178,14 +179,13 @@ class ModbusSerialClient(BaseModbusClient):
         return self.socket is not None
 
     def close(self):
-        """ Closes the underlying socket connection
-        """
+        """Close the underlying socket connection."""
         if self.socket:
             self.socket.close()
         self.socket = None
 
     def _send(self, request):
-        """ Sends data on the underlying socket
+        """Send data on the underlying socket.
 
         :param request: The encoded request to send
         :return: The number of bytes written
@@ -197,7 +197,7 @@ class ModbusSerialClient(BaseModbusClient):
         return 0
 
     def _recv(self, size):
-        """ Reads data from the underlying descriptor
+        """Read data from the underlying descriptor.
 
         :param size: The number of bytes to read
         :return: The bytes read
@@ -207,16 +207,16 @@ class ModbusSerialClient(BaseModbusClient):
         return self.socket.read(size)
 
     def __str__(self):
-        """ Builds a string representation of the connection
+        """Build a string representation of the connection.
 
         :returns: The string representation
         """
         return "%s baud[%s]" % (self.method, self.baudrate)
 
 
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
 # Exported symbols
-# ---------------------------------------------------------------------------#
+# --------------------------------------------------------------------------- #
 __all__ = [
     "ModbusSerialClient"
 ]
