@@ -33,8 +33,7 @@
 # Copyright (c) 2012, Robotiq, Inc.
 # Revision $Id$
 #
-# Modifed from the orginal comModbusTcp by Kelsey Hawkins @ Georgia Tech
-
+# Modified from the original comModbusTcp by Kelsey Hawkins @ Georgia Tech
 
 
 """@package docstring
@@ -43,75 +42,77 @@ Module comModbusRtu: defines a class which communicates with Robotiq Grippers us
 The module depends on pymodbus (http://code.google.com/p/pymodbus/) for the Modbus RTU client.
 """
 
-from pymodbus.client.sync import ModbusSerialClient
+from .robotiqmodbus.client.sync import ModbusSerialClient
 from pymodbus.register_read_message import ReadHoldingRegistersResponse
 from pymodbus.register_write_message import WriteMultipleRegistersResponse
 from math import ceil
 
-class communication:	
 
-   def __init__(self, retry=False):
-      """Setting the retry parameter to True will lead to retries until an answer is delivered."""
-      self.client = None
-      self.retry = retry
-      
-   def connectToDevice(self, device):
-      """Connection to the client - the method takes the IP address (as a string, e.g. '192.168.1.11') as an argument."""
-      self.client = ModbusSerialClient(method='rtu',port=device,stopbits=1, bytesize=8, baudrate=115200, timeout=0.05)
-      if not self.client.connect():
-          print("Unable to connect to {}".format(device))
-          return False
-      return True
+class communication:
 
-   def disconnectFromDevice(self):
-      """Close connection"""
-      self.client.close()
+    def __init__(self, retry=False):
+        """Setting the retry parameter to True will lead to retries until an answer is delivered."""
+        self.client = None
+        self.retry = retry
 
-   def sendCommand(self, data):   
-      """Send a command to the Gripper - the method takes a list of uint8 as an argument. The meaning of each variable depends on the Gripper model (see support.robotiq.com for more details)"""
-      #make sure data has an even number of elements   
-      if(len(data) % 2 == 1):
-         data.append(0)
+    def connectToDevice(self, device):
+        """Connection to the client - the method takes the IP address (as a string, e.g. '192.168.1.11') as an argument."""
+        self.client = ModbusSerialClient(method='rtu', port=device, stopbits=1, bytesize=8, baudrate=115200,
+                                         timeout=0.05)
+        if not self.client.connect():
+            print("Unable to connect to {}".format(device))
+            return False
+        return True
 
-      #Initiate message as an empty list
-      message = []
+    def disconnectFromDevice(self):
+        """Close connection"""
+        self.client.close()
 
-      #Fill message by combining two bytes in one register
-      for i in range(0, len(data)//2):
-         message.append((data[2*i] << 8) + data[2*i+1])
+    def sendCommand(self, data):
+        """Send a command to the Gripper - the method takes a list of uint8 as an argument. The meaning of each variable depends on the Gripper model (see support.robotiq.com for more details)"""
+        # make sure data has an even number of elements
+        if (len(data) % 2 == 1):
+            data.append(0)
 
-      if self.retry:
-         while True:
-            response = self.client.write_registers(0x03E8, message, unit=0x0009)
-            if isinstance(response, WriteMultipleRegistersResponse):
-               break
-      else:
-         # To do!: Implement try/except
-         self.client.write_registers(0x03E8, message, unit=0x0009)
+        # Initiate message as an empty list
+        message = []
 
-   def getStatus(self, numBytes):
-      """Sends a request to read, wait for the response and returns the Gripper status. The method gets the number of bytes to read as an argument"""
-      numRegs = int(ceil(numBytes/2.0))
+        # Fill message by combining two bytes in one register
+        for i in range(0, len(data) // 2):
+            message.append((data[2 * i] << 8) + data[2 * i + 1])
 
-      #Get status from the device
-      if self.retry:
-         while True:
+        if self.retry:
+            while True:
+                response = self.client.write_registers(0x03E8, message, unit=0x0009)
+                if isinstance(response, WriteMultipleRegistersResponse):
+                    break
+        else:
+            # To do!: Implement try/except
+            self.client.write_registers(0x03E8, message, unit=0x0009)
+
+    def getStatus(self, numBytes):
+        """Sends a request to read, wait for the response and returns the Gripper status. The method gets the number of bytes to read as an argument"""
+        numRegs = int(ceil(numBytes / 2.0))
+
+        # Get status from the device
+        if self.retry:
+            while True:
+                response = self.client.read_holding_registers(0x07D0, numRegs, unit=0x0009)
+                if isinstance(response, ReadHoldingRegistersResponse):
+                    break
+        else:
+            # To do!: Implement try/except
             response = self.client.read_holding_registers(0x07D0, numRegs, unit=0x0009)
-            if isinstance(response, ReadHoldingRegistersResponse):
-               break
-      else:
-         # To do!: Implement try/except
-         response = self.client.read_holding_registers(0x07D0, numRegs, unit=0x0009)
-         if not response:
-            print("Could not read registers on gripper. Please check connection and chosen device.")
+            if not response:
+                print("Could not read registers on gripper. Please check connection and chosen device.")
 
-      #Instantiate output as an empty list
-      output = []
+        # Instantiate output as an empty list
+        output = []
 
-      #Fill the output with the bytes in the appropriate order
-      for i in range(0, numRegs):
-         output.append((response.getRegister(i) & 0xFF00) >> 8)
-         output.append( response.getRegister(i) & 0x00FF)
-      
-      #Output the result
-      return output
+        # Fill the output with the bytes in the appropriate order
+        for i in range(0, numRegs):
+            output.append((response.getRegister(i) & 0xFF00) >> 8)
+            output.append(response.getRegister(i) & 0x00FF)
+
+        # Output the result
+        return output
