@@ -28,9 +28,7 @@ add_executable(robotiq_2f_gripper_action_server_node
     include/robotiq_2f_gripper_action_server/robotiq_2f_gripper_action_server.h)
 
 add_dependencies(robotiq_2f_gripper_action_server_node
-  robotiq_2f_gripper_action_server_generate_messages_cpp
-  ${robotiq_2f_gripper_action_server_EXPORTED_TARGETS}
-  ${robotiq_2f_gripper_control_EXPORTED_TARGETS})
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
  target_link_libraries(robotiq_2f_gripper_action_server_node
    ${catkin_LIBRARIES}
@@ -42,8 +40,7 @@ add_executable(robotiq_2f_gripper_action_server_client_test
 )
 
 add_dependencies(robotiq_2f_gripper_action_server_client_test
-  robotiq_2f_gripper_action_server_generate_messages_cpp
-  ${robotiq_action_server_EXPORTED_TARGETS})
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
  target_link_libraries(robotiq_2f_gripper_action_server_client_test
    ${catkin_LIBRARIES}

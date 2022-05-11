@@ -34,7 +34,8 @@ include_directories(
 add_executable(robotiq_3f_gripper_joint_states src/robotiq_3f_gripper_joint_states.cpp)
 
 ## Add cmake target dependencies of the executable/library
-add_dependencies(robotiq_3f_gripper_joint_states robotiq_3f_gripper_control_generate_messages_cpp)
+add_dependencies(robotiq_3f_gripper_joint_states
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(robotiq_3f_gripper_joint_states
