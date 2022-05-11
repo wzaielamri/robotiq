@@ -39,7 +39,7 @@
 """@package docstring
 Module comModbusRtu: defines a class which communicates with Robotiq Grippers using the Modbus RTU protocol. 
 
-The module depends on pymodbus (http://code.google.com/p/pymodbus/) for the Modbus RTU client.
+The module depends on pymodbus (https://code.google.com/p/pymodbus/) for the Modbus RTU client.
 """
 
 from .robotiqmodbus.client.sync import ModbusSerialClient
@@ -56,7 +56,8 @@ class communication:
         self.retry = retry
 
     def connectToDevice(self, device):
-        """Connection to the client - the method takes the IP address (as a string, e.g. '192.168.1.11') as an argument."""
+        """Connection to the client - the method takes the IP address (as a string, e.g. '192.168.1.11') as an argument.
+        """
         self.client = ModbusSerialClient(method='rtu', port=device, stopbits=1, bytesize=8, baudrate=115200,
                                          timeout=0.05)
         if not self.client.connect():
@@ -69,9 +70,10 @@ class communication:
         self.client.close()
 
     def sendCommand(self, data):
-        """Send a command to the Gripper - the method takes a list of uint8 as an argument. The meaning of each variable depends on the Gripper model (see support.robotiq.com for more details)"""
+        """Send a command to the Gripper - the method takes a list of uint8 as an argument. The meaning of each variable
+        depends on the Gripper model (see support.robotiq.com for more details)"""
         # make sure data has an even number of elements
-        if (len(data) % 2 == 1):
+        if len(data) % 2 == 1:
             data.append(0)
 
         # Initiate message as an empty list
@@ -91,7 +93,8 @@ class communication:
             self.client.write_registers(0x03E8, message, unit=0x0009)
 
     def getStatus(self, numBytes):
-        """Sends a request to read, wait for the response and returns the Gripper status. The method gets the number of bytes to read as an argument"""
+        """Sends a request to read, wait for the response and returns the Gripper status. The method gets the number of
+        bytes to read as an argument"""
         numRegs = int(ceil(numBytes / 2.0))
 
         # Get status from the device
