@@ -1,10 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import numpy as np
-
-import roslib
-roslib.load_manifest('robotiq_2f_gripper_control')
-
 import rospy
 from robotiq_2f_gripper_control.msg import Robotiq2FGripper_robot_output as outputMsg
 from robotiq_2f_gripper_control.msg import Robotiq2FGripper_robot_input as inputMsg
@@ -166,12 +162,12 @@ def main():
     if gripper.is_reset():
         gripper.reset()
         gripper.activate()
-    print gripper.close(block=True)
+    print(gripper.close(block=True))
     while not rospy.is_shutdown():
-        print gripper.open(block=False)
+        print(gripper.open(block=False))
         rospy.sleep(0.11)
         gripper.stop()
-        print gripper.close(block=False)
+        print(gripper.close(block=False))
         rospy.sleep(0.1)
         gripper.stop()
 
