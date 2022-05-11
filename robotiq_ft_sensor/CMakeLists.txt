@@ -7,8 +7,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
-
-## Generate messages in the 'msg' folder
 add_message_files(
   DIRECTORY
     msg
@@ -16,7 +14,6 @@ add_message_files(
     ft_sensor.msg
 )
 
-## Generate services in the 'srv' folder
 add_service_files(
   DIRECTORY
     srv
@@ -24,22 +21,14 @@ add_service_files(
     sensor_accessor.srv
 )
 
-## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
   std_msgs
 )
 
-###################################
-## catkin specific configuration ##
-###################################
 catkin_package(
-  CATKIN_DEPENDS message_runtime std_msgs
+  CATKIN_DEPENDS message_runtime std_msgs roscpp
 )
-
-###########
-## Build ##
-###########
 
 include_directories(
   include ${catkin_INCLUDE_DIRS}

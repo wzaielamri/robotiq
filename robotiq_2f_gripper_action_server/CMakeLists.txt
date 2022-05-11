@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS actionlib actionlib_msgs robotiq_2f_gripper_control roscpp
+  CATKIN_DEPENDS actionlib actionlib_msgs robotiq_2f_gripper_control roscpp control_msgs
 )
 
 include_directories(include)

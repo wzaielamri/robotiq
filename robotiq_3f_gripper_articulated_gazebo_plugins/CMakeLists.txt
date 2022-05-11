@@ -11,12 +11,8 @@ include_directories(
   ${GAZEBO_INCLUDE_DIRS}
 )
 
-link_directories(
-  ${GAZEBO_LIBRARY_DIRS}
-)
-
 catkin_package(
-   DEPENDS gazebo_plugins gazebo_ros robotiq_3f_gripper_articulated_msgs roscpp
+  CATKIN_DEPENDS gazebo_plugins gazebo_ros robotiq_3f_gripper_articulated_msgs roscpp geometry_msgs actionlib control_msgs std_msgs trajectory_msgs tf sensor_msgs
 )
 
 add_library(RobotiqHandPlugin src/RobotiqHandPlugin.cpp)
@@ -26,4 +22,3 @@ target_link_libraries(RobotiqHandPlugin ${catkin_LIBRARIES})
 add_dependencies(RobotiqHandPlugin ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 install(TARGETS RobotiqHandPlugin DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}/${PROJECT_NAME}/plugins/)
-
