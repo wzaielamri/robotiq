@@ -44,6 +44,7 @@ class ModbusRtuFramer(IModbusFramer):
         :param decoder: The decoder factory implementation to use
         """
         self.__buffer = b''
+        self._buffer = b''
         self.__header = {}
         self.__hsize = 0x01
         self.__end = b'\x0d\x0a'

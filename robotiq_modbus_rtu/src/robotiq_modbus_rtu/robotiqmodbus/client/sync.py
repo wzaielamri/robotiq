@@ -5,7 +5,7 @@ from pymodbus.constants import Defaults
 from pymodbus.factory import ClientDecoder
 from pymodbus.exceptions import NotImplementedException, ParameterException
 from pymodbus.exceptions import ConnectionException
-from pymodbus.transaction import FifoTransactionManager
+from .transaction import FifoTransactionManager
 from pymodbus.transaction import DictTransactionManager
 from pymodbus.transaction import ModbusSocketFramer, ModbusBinaryFramer
 from pymodbus.transaction import ModbusAsciiFramer
