@@ -12,4 +12,3 @@ Run:
 or
 
 `rosrun robotiq_3f_gripper_joint_state_publisher robotiq_3f_gripper_joint_states _prefix:=<gripper_prefix>`
-

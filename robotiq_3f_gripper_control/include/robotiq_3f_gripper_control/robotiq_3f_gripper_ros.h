@@ -38,24 +38,23 @@ namespace robotiq_3f_gripper_control
 class Robotiq3FGripperROS
 {
 public:
-    Robotiq3FGripperROS(ros::NodeHandle& nh,
-                  boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperAPI> driver, std::vector<std::string> joint_names,
-                  ros::Duration desired_update_freq);
+    Robotiq3FGripperROS(ros::NodeHandle& nh, boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperAPI> driver,
+                        std::vector<std::string> joint_names, ros::Duration desired_update_freq);
 
     void publish();
 
-    bool handleInit(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp);
-    bool handleReset(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp);
-    bool handleHalt(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp);
-    bool handleEmergRelease(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp);
-    bool handleShutdown(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp);
+    bool handleInit(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp);
+    bool handleReset(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp);
+    bool handleHalt(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp);
+    bool handleEmergRelease(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp);
+    bool handleShutdown(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp);
 
-    void handleReconfigure(robotiq_3f_gripper_control::Robotiq3FGripperConfig &config, uint32_t level=0);
+    void handleReconfigure(robotiq_3f_gripper_control::Robotiq3FGripperConfig& config, uint32_t level = 0);
 
-    void handleRawCmd(const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr &msg);
+    void handleRawCmd(const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr& msg);
 
-    void updateConfig(const robotiq_3f_gripper_control::Robotiq3FGripperConfig &config);
-    void getCurrentConfig(robotiq_3f_gripper_control::Robotiq3FGripperConfig &config);
+    void updateConfig(const robotiq_3f_gripper_control::Robotiq3FGripperConfig& config);
+    void getCurrentConfig(robotiq_3f_gripper_control::Robotiq3FGripperConfig& config);
 
 private:
     ros::NodeHandle nh_;
@@ -82,8 +81,7 @@ private:
     robotiq_3f_gripper_control::Robotiq3FGripperConfig config_;
 
     robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotInput input_status_msg_;
-
 };
-} //end namespace robotiq_3f_gripper_control
+}  // end namespace robotiq_3f_gripper_control
 
-#endif // ROBOTIQ_3F_GRIPPER_ROS_H
+#endif  // ROBOTIQ_3F_GRIPPER_ROS_H

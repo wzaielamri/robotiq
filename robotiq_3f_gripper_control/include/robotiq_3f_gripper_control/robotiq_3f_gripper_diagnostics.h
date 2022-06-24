@@ -30,15 +30,15 @@
 
 namespace robotiq_3f_gripper_control
 {
-
 class Robotiq3FGripperDiagnostics
 {
 public:
-    Robotiq3FGripperDiagnostics(boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperAPI> driver, std::string name);
+    Robotiq3FGripperDiagnostics(boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperAPI> driver,
+                                std::string name);
 
     void update();
 
-    void getStatus(diagnostic_updater::DiagnosticStatusWrapper &stat);
+    void getStatus(diagnostic_updater::DiagnosticStatusWrapper& stat);
 
 protected:
     boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperAPI> driver_;
@@ -51,8 +51,7 @@ protected:
     std::string toString(robotiq::GripperStatus status);
     std::string toString(robotiq::MotionStatus status);
     std::string toString(robotiq::FaultStatus status);
-
 };
-} //end namespace robotiq_3f_gripper_control
+}  // end namespace robotiq_3f_gripper_control
 
-#endif // ROBOTIQ_3F_GRIPPER_DIAGNOSTICS_H
+#endif  // ROBOTIQ_3F_GRIPPER_DIAGNOSTICS_H

@@ -31,7 +31,6 @@
 
 namespace robotiq_3f_gripper_control
 {
-
 /**
  * \brief This class provides a client for the EtherCAT manager object that
  *        can translate robot input/output messages and translate them to
@@ -44,7 +43,6 @@ public:
     Robotiq3FGripperCanClient(unsigned int can_id, boost::shared_ptr<can::DriverInterface> driver);
 
     virtual ~Robotiq3FGripperCanClient();
-
 
     void init(ros::NodeHandle nh);
 
@@ -79,8 +77,8 @@ private:
     can::CommInterface::FrameListenerConstSharedPtr frame_listener_;
     can::StateInterface::StateListenerConstSharedPtr state_listener_;
 
-    void frameCallback(const can::Frame &f);
-    void stateCallback(const can::State &s);
+    void frameCallback(const can::Frame& f);
+    void stateCallback(const can::State& s);
 
     void requestStart();
 
@@ -88,23 +86,23 @@ private:
 
     mutable boost::timed_mutex read_mutex;
 
-    void decodeGripperStatus(const u_int8_t &f);
-    void decodeObjectStatus(const u_int8_t &f);
-    void decodeFaultStatus(const u_int8_t &f);
-    void decodeFingerAPos(const u_int8_t &f);
-    void decodeFingerBPos(const u_int8_t &f);
-    void decodeFingerCPos(const u_int8_t &f);
-    void decodeFingerSPos(const u_int8_t &f);
-    void decodeFingerACurrent(const u_int8_t &f);
-    void decodeFingerBCurrent(const u_int8_t &f);
-    void decodeFingerCCurrent(const u_int8_t &f);
-    void decodeFingerSCurrent(const u_int8_t &f);
-    void decodeFingerAPosCmd(const u_int8_t &f);
-    void decodeFingerBPosCmd(const u_int8_t &f);
-    void decodeFingerCPosCmd(const u_int8_t &f);
-    void decodeFingerSPosCmd(const u_int8_t &f);
+    void decodeGripperStatus(const u_int8_t& f);
+    void decodeObjectStatus(const u_int8_t& f);
+    void decodeFaultStatus(const u_int8_t& f);
+    void decodeFingerAPos(const u_int8_t& f);
+    void decodeFingerBPos(const u_int8_t& f);
+    void decodeFingerCPos(const u_int8_t& f);
+    void decodeFingerSPos(const u_int8_t& f);
+    void decodeFingerACurrent(const u_int8_t& f);
+    void decodeFingerBCurrent(const u_int8_t& f);
+    void decodeFingerCCurrent(const u_int8_t& f);
+    void decodeFingerSCurrent(const u_int8_t& f);
+    void decodeFingerAPosCmd(const u_int8_t& f);
+    void decodeFingerBPosCmd(const u_int8_t& f);
+    void decodeFingerCPosCmd(const u_int8_t& f);
+    void decodeFingerSPosCmd(const u_int8_t& f);
 };
 
-} //end namespace robotiq_3f_gripper_control
+}  // end namespace robotiq_3f_gripper_control
 
-#endif // ROBOTIQ_3F_GRIPPER_CAN_CLIENT_H
+#endif  // ROBOTIQ_3F_GRIPPER_CAN_CLIENT_H

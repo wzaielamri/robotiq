@@ -37,7 +37,7 @@
 
 
 """@package docstring
-Module comModbusRtu: defines a class which communicates with Robotiq Grippers using the Modbus RTU protocol. 
+Module comModbusRtu: defines a class which communicates with Robotiq Grippers using the Modbus RTU protocol.
 
 The module depends on pymodbus (https://code.google.com/p/pymodbus/) for the Modbus RTU client.
 """
@@ -49,17 +49,21 @@ from math import ceil
 
 
 class communication:
-
     def __init__(self, retry=False):
         """Setting the retry parameter to True will lead to retries until an answer is delivered."""
         self.client = None
         self.retry = retry
 
     def connectToDevice(self, device):
-        """Connection to the client - the method takes the IP address (as a string, e.g. '192.168.1.11') as an argument.
-        """
-        self.client = ModbusSerialClient(method='rtu', port=device, stopbits=1, bytesize=8, baudrate=115200,
-                                         timeout=0.05)
+        """Connection to the client - the method takes the IP address (as a string, e.g. '192.168.1.11') as an argument."""
+        self.client = ModbusSerialClient(
+            method="rtu",
+            port=device,
+            stopbits=1,
+            bytesize=8,
+            baudrate=115200,
+            timeout=0.05,
+        )
         if not self.client.connect():
             print("Unable to connect to {}".format(device))
             return False
@@ -100,14 +104,18 @@ class communication:
         # Get status from the device
         if self.retry:
             while True:
-                response = self.client.read_holding_registers(0x07D0, numRegs, unit=0x0009)
+                response = self.client.read_holding_registers(
+                    0x07D0, numRegs, unit=0x0009
+                )
                 if isinstance(response, ReadHoldingRegistersResponse):
                     break
         else:
             # To do!: Implement try/except
             response = self.client.read_holding_registers(0x07D0, numRegs, unit=0x0009)
             if not response:
-                print("Could not read registers on gripper. Please check connection and chosen device.")
+                print(
+                    "Could not read registers on gripper. Please check connection and chosen device."
+                )
 
         # Instantiate output as an empty list
         output = []

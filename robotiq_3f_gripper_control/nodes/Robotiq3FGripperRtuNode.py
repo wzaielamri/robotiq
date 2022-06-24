@@ -17,19 +17,27 @@ from robotiq_3f_gripper_articulated_msgs.msg import Robotiq3FGripperRobotOutput
 
 def mainLoop(address):
     # Gripper is a 3F gripper with a TCP connection
-    gripper = robotiq_3f_gripper_control.baseRobotiq3FGripper.robotiqbaseRobotiq3FGripper()
+    gripper = (
+        robotiq_3f_gripper_control.baseRobotiq3FGripper.robotiqbaseRobotiq3FGripper()
+    )
     gripper.client = robotiq_modbus_rtu.comModbusRtu.communication(retry=True)
 
     # We connect to the address received as an argument
     gripper.client.connectToDevice(address)
 
-    rospy.init_node('robotiq3FGripper')
+    rospy.init_node("robotiq3FGripper")
 
     # The Gripper status is published on the topic named 'Robotiq3FGripperRobotInput'
-    pub = rospy.Publisher('Robotiq3FGripperRobotInput', Robotiq3FGripperRobotInput, queue_size=1)
+    pub = rospy.Publisher(
+        "Robotiq3FGripperRobotInput", Robotiq3FGripperRobotInput, queue_size=1
+    )
 
     # The Gripper command is received from the topic named 'Robotiq3FGripperRobotOutput'
-    rospy.Subscriber('Robotiq3FGripperRobotOutput', Robotiq3FGripperRobotOutput, gripper.refreshCommand)
+    rospy.Subscriber(
+        "Robotiq3FGripperRobotOutput",
+        Robotiq3FGripperRobotOutput,
+        gripper.refreshCommand,
+    )
 
     # We loop
     while not rospy.is_shutdown():
@@ -47,7 +55,7 @@ def mainLoop(address):
         rospy.sleep(0.05)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         # TODO: Add verification that the argument is an IP address
         mainLoop(sys.argv[1])

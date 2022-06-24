@@ -29,20 +29,75 @@
 
 namespace robotiq
 {
-enum InitializationMode { INIT_RESET, INIT_ACTIVATION };
-enum GraspingMode { GRASP_BASIC, GRASP_PINCH, GRASP_WIDE, GRASP_SCISSOR };
-enum ActionMode { ACTION_STOP, ACTION_GO };
-enum GripperStatus { GRIPPER_RESET, GRIPPER_ACTIVATING, GRIPPER_MODE_CHANGE, GRIPPER_READY };
-enum MotionStatus { MOTION_STARTED, MOTION_PARTIAL_STOP, MOTION_ALL_STOP, MOTION_COMPLETE };
-enum ObjectStatus { OBJECT_MOTION, OBJECT_OPEN_CONTACT, OBJECT_CLOSE_CONTACT, OBJECT_MOTION_COMPLETE };
-enum FaultStatus { FAULT_NONE, FAULT_UNKNOWN_1, FAULT_UNKNOWN_2, FAULT_UNKNOWN_3,
-                   NOTICE, NOTICE_ACTIVATION_DELAYED, NOTICE_MODE_DELAYED, NOTICE_ACTIVATION_NEEDED,
-                   WARNING, WARNING_COMM_NOT_READY, WARNING_MODE, WARNING_AUTOMATIC_RELEASE,
-                   ERROR, ERROR_ACTIVATION_FAULT, ERROR_MODE_FAULT, ERROR_AUTOMATIC_RELEASE_COMPLETE };
+enum InitializationMode
+{
+    INIT_RESET,
+    INIT_ACTIVATION
+};
+enum GraspingMode
+{
+    GRASP_BASIC,
+    GRASP_PINCH,
+    GRASP_WIDE,
+    GRASP_SCISSOR
+};
+enum ActionMode
+{
+    ACTION_STOP,
+    ACTION_GO
+};
+enum GripperStatus
+{
+    GRIPPER_RESET,
+    GRIPPER_ACTIVATING,
+    GRIPPER_MODE_CHANGE,
+    GRIPPER_READY
+};
+enum MotionStatus
+{
+    MOTION_STARTED,
+    MOTION_PARTIAL_STOP,
+    MOTION_ALL_STOP,
+    MOTION_COMPLETE
+};
+enum ObjectStatus
+{
+    OBJECT_MOTION,
+    OBJECT_OPEN_CONTACT,
+    OBJECT_CLOSE_CONTACT,
+    OBJECT_MOTION_COMPLETE
+};
+enum FaultStatus
+{
+    FAULT_NONE,
+    FAULT_UNKNOWN_1,
+    FAULT_UNKNOWN_2,
+    FAULT_UNKNOWN_3,
+    NOTICE,
+    NOTICE_ACTIVATION_DELAYED,
+    NOTICE_MODE_DELAYED,
+    NOTICE_ACTIVATION_NEEDED,
+    WARNING,
+    WARNING_COMM_NOT_READY,
+    WARNING_MODE,
+    WARNING_AUTOMATIC_RELEASE,
+    ERROR,
+    ERROR_ACTIVATION_FAULT,
+    ERROR_MODE_FAULT,
+    ERROR_AUTOMATIC_RELEASE_COMPLETE
+};
 
-enum EmergencyRelease { EMERGENCY_RELEASE_IDLE, EMERGENCY_RELEASE_ENGAGED };
-enum IndividualControl { IND_CONTROL_OFF, IND_CONTROL_ON };
-} // end namespace robotiq
+enum EmergencyRelease
+{
+    EMERGENCY_RELEASE_IDLE,
+    EMERGENCY_RELEASE_ENGAGED
+};
+enum IndividualControl
+{
+    IND_CONTROL_OFF,
+    IND_CONTROL_ON
+};
+}  // end namespace robotiq
 
 namespace robotiq_3f_gripper_control
 {
@@ -58,20 +113,21 @@ public:
     void setActionMode(ActionMode mode);
     void setEmergencyRelease(EmergencyRelease release);
     void setInidividualControlMode(IndividualControl fingers, IndividualControl scissor);
-    void setPosition(const double &posA, const double &posB=0, const double &posC=0, const double &posS=0);
-    void setVelocity(const double &velA, const double &velB=0, const double &velC=0, const double &velS=0);
-    void setForce(const double &fA, const double &fB=0, const double &fC=0, const double &fS=0);
-    void setRaw(const Robotiq3FGripperClientBase::GripperOutput &raw);
+    void setPosition(const double& posA, const double& posB = 0, const double& posC = 0, const double& posS = 0);
+    void setVelocity(const double& velA, const double& velB = 0, const double& velC = 0, const double& velS = 0);
+    void setForce(const double& fA, const double& fB = 0, const double& fC = 0, const double& fS = 0);
+    void setRaw(const Robotiq3FGripperClientBase::GripperOutput& raw);
 
-    void getPosition(double *posA, double *posB, double *posC, double *posS) const;
-    void getPositionCmd(double *posA, double *posB, double *posC, double *posS) const;
-    void getCurrent(double *curA, double *curB, double *curC, double *curS) const;
-    void getGripperStatus(InitializationMode *gACT,  GraspingMode *gMOD, ActionMode *gGTO, GripperStatus *gIMC, MotionStatus *gSTA) const;
-    void getFaultStatus(FaultStatus *gFLT) const;
-    void getObjectStatus(ObjectStatus *fA, ObjectStatus *fB, ObjectStatus *fC, ObjectStatus *fS) const;
-    void getRaw(Robotiq3FGripperClientBase::GripperInput *raw) const;
+    void getPosition(double* posA, double* posB, double* posC, double* posS) const;
+    void getPositionCmd(double* posA, double* posB, double* posC, double* posS) const;
+    void getCurrent(double* curA, double* curB, double* curC, double* curS) const;
+    void getGripperStatus(InitializationMode* gACT, GraspingMode* gMOD, ActionMode* gGTO, GripperStatus* gIMC,
+                          MotionStatus* gSTA) const;
+    void getFaultStatus(FaultStatus* gFLT) const;
+    void getObjectStatus(ObjectStatus* fA, ObjectStatus* fB, ObjectStatus* fC, ObjectStatus* fS) const;
+    void getRaw(Robotiq3FGripperClientBase::GripperInput* raw) const;
 
-    void getCommandPos(double *posA, double *posB, double *posC, double *posS) const;
+    void getCommandPos(double* posA, double* posB, double* posC, double* posS) const;
 
     bool isInitialized();
     bool isReady();
@@ -99,17 +155,16 @@ private:
     double force_to_ticks_;
     double force_offset_;
     double cur_to_ticks_;
-
 };
 
 template <typename T>
-inline T limit (double value)
+inline T limit(double value)
 {
     value = value < std::numeric_limits<T>::min() ? std::numeric_limits<T>::min() : value;
     value = value > std::numeric_limits<T>::max() ? std::numeric_limits<T>::max() : value;
     return static_cast<T>(value);
 }
 
-} //end namespace robotiq_3f_gripper_control
+}  // end namespace robotiq_3f_gripper_control
 
-#endif // ROBOTIQ_3F_GRIPPER_API_H
+#endif  // ROBOTIQ_3F_GRIPPER_API_H

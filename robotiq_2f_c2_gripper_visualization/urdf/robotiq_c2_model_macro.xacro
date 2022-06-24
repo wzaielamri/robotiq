@@ -85,7 +85,7 @@
       </geometry>
       <origin rpy="1.5707 -1.5707 0" xyz="0 .04191 -.0306"/>
     </collision>
-  </link> 
+  </link>
 
   <link name="${prefix}robotiq_85_right_knuckle_link">
     <visual>
@@ -119,8 +119,8 @@
     <origin rpy="3.1415 0 0" xyz="0 .00508 .03134"/>
     <limit lower="0" upper="1.5707" velocity="2.0" effort="1000"/>
   </joint>
-  <!--  \/  --> 
-  <!--  \/  -->  
+  <!--  \/  -->
+  <!--  \/  -->
 
   <link name="${prefix}robotiq_85_left_finger_link">
     <visual>
@@ -135,7 +135,7 @@
       </geometry>
       <origin rpy="-1.5707 1.5707 0" xyz="0 -.03683 .06194"/>
     </collision>
-  </link> 
+  </link>
 
   <link name="${prefix}robotiq_85_right_finger_link">
     <visual>
@@ -150,7 +150,7 @@
       </geometry>
       <origin rpy="-1.5707 -1.5707 0" xyz="0 -.03683 .06194"/>
     </collision>
-  </link> 
+  </link>
 
   <!--  /\  -->
   <!--  /\  -->
@@ -161,7 +161,7 @@
     <origin rpy="1.5707 1.5707 0" xyz=".04843 .0127 0"/>
     <limit lower="0" upper="1.5707" velocity="2.0" effort="1000"/>
     <mimic joint="${prefix}robotiq_85_left_knuckle_joint" offset="0"/>
-  </joint> 
+  </joint>
 
   <joint name="${prefix}robotiq_85_right_inner_knuckle_joint" type="revolute">
     <parent link="${prefix}robotiq_85_base_link"/>
@@ -171,8 +171,8 @@
     <limit lower="0" upper="1.5707" velocity="2.0" effort="1000"/>
     <mimic joint="${prefix}robotiq_85_left_knuckle_joint" offset="0"/>
   </joint>
-  <!--  \/  --> 
-  <!--  \/  -->  
+  <!--  \/  -->
+  <!--  \/  -->
 
   <link name="${prefix}robotiq_85_left_inner_knuckle_link">
     <visual>
@@ -223,8 +223,8 @@
     <limit lower="0" upper="1.5707" velocity="2.0" effort="1000"/>
     <mimic joint="${prefix}robotiq_85_left_knuckle_joint" multiplier="-1"/>
   </joint>
-  <!--  \/  --> 
-  <!--  \/  -->  
+  <!--  \/  -->
+  <!--  \/  -->
 
   <link name="${prefix}robotiq_85_left_finger_tip_link">
     <visual>
@@ -239,7 +239,7 @@
       </geometry>
       <origin rpy="-1.5707 1.5707 0" xyz="0 -.090381 .051505"/>
     </collision>
-  </link> 
+  </link>
 
   <link name="${prefix}robotiq_85_right_finger_tip_link">
     <visual>

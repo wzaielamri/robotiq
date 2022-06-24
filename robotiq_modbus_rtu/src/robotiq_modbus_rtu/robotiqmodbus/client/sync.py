@@ -31,7 +31,7 @@ class BaseModbusClient(ModbusClientMixin):
     """
 
     def __init__(self, framer):
-        """ Initialize a client instance
+        """Initialize a client instance
 
         :param framer: The modbus framer implementation to use
         """
@@ -113,10 +113,12 @@ class BaseModbusClient(ModbusClientMixin):
 # --------------------------------------------------------------------------- #
 
 
-class ModbusSerialClient(BaseModbusClient):  # pylint: disable=too-many-instance-attributes
+class ModbusSerialClient(
+    BaseModbusClient
+):  # pylint: disable=too-many-instance-attributes
     """Implementation of a modbus serial client."""
 
-    def __init__(self, method='ascii', **kwargs):
+    def __init__(self, method="ascii", **kwargs):
         """Initialize a serial client instance.
 
         The methods to connect are::
@@ -137,12 +139,12 @@ class ModbusSerialClient(BaseModbusClient):  # pylint: disable=too-many-instance
         self.socket = None
         BaseModbusClient.__init__(self, self.__implementation(method))
 
-        self.port = kwargs.get('port', 0)
-        self.stopbits = kwargs.get('stopbits', Defaults.Stopbits)
-        self.bytesize = kwargs.get('bytesize', Defaults.Bytesize)
-        self.parity = kwargs.get('parity', Defaults.Parity)
-        self.baudrate = kwargs.get('baudrate', Defaults.Baudrate)
-        self.timeout = kwargs.get('timeout', Defaults.Timeout)
+        self.port = kwargs.get("port", 0)
+        self.stopbits = kwargs.get("stopbits", Defaults.Stopbits)
+        self.bytesize = kwargs.get("bytesize", Defaults.Bytesize)
+        self.parity = kwargs.get("parity", Defaults.Parity)
+        self.baudrate = kwargs.get("baudrate", Defaults.Baudrate)
+        self.timeout = kwargs.get("timeout", Defaults.Timeout)
 
     @staticmethod
     def __implementation(method):
@@ -152,13 +154,13 @@ class ModbusSerialClient(BaseModbusClient):  # pylint: disable=too-many-instance
         :returns: The requested serial framer
         """
         method = method.lower()
-        if method == 'ascii':
+        if method == "ascii":
             return ModbusAsciiFramer(ClientDecoder())
-        if method == 'rtu':
+        if method == "rtu":
             return ModbusRtuFramer(ClientDecoder())
-        if method == 'binary':
+        if method == "binary":
             return ModbusBinaryFramer(ClientDecoder())
-        if method == 'socket':
+        if method == "socket":
             return ModbusSocketFramer(ClientDecoder())
         raise ParameterException("Invalid framer method requested")
 
@@ -170,9 +172,14 @@ class ModbusSerialClient(BaseModbusClient):  # pylint: disable=too-many-instance
         if self.socket:
             return True
         try:
-            self.socket = serial.Serial(port=self.port, timeout=self.timeout,
-                                        bytesize=self.bytesize, stopbits=self.stopbits,
-                                        baudrate=self.baudrate, parity=self.parity)
+            self.socket = serial.Serial(
+                port=self.port,
+                timeout=self.timeout,
+                bytesize=self.bytesize,
+                stopbits=self.stopbits,
+                baudrate=self.baudrate,
+                parity=self.parity,
+            )
         except serial.SerialException as msg:
             _logger.error(msg)
             self.close()
@@ -217,6 +224,4 @@ class ModbusSerialClient(BaseModbusClient):  # pylint: disable=too-many-instance
 # --------------------------------------------------------------------------- #
 # Exported symbols
 # --------------------------------------------------------------------------- #
-__all__ = [
-    "ModbusSerialClient"
-]
+__all__ = ["ModbusSerialClient"]

@@ -5,7 +5,7 @@
 
   <description>
     <p>
-      This package defines protocol-agnostic action-server interfaces using the 
+      This package defines protocol-agnostic action-server interfaces using the
       control_msgs::GripperCommand ROS interface for Robotiq grippers. Depending
       on your use case, you may need more fine grained control, but this is
       a good place to start.

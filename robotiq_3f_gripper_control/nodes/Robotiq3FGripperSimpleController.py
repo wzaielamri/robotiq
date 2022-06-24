@@ -51,33 +51,33 @@ from six.moves import input
 def genCommand(char, command):
     """Update the command according to the character entered by the user."""
 
-    if char == 'a':
+    if char == "a":
         command = Robotiq3FGripperRobotOutput()
         command.rACT = 1
         command.rGTO = 1
         command.rSPA = 255
         command.rFRA = 150
 
-    if char == 'r':
+    if char == "r":
         command = Robotiq3FGripperRobotOutput()
         command.rACT = 0
 
-    if char == 'c':
+    if char == "c":
         command.rPRA = 255
 
-    if char == 'o':
+    if char == "o":
         command.rPRA = 0
 
-    if char == 'b':
+    if char == "b":
         command.rMOD = 0
 
-    if char == 'p':
+    if char == "p":
         command.rMOD = 1
 
-    if char == 'w':
+    if char == "w":
         command.rMOD = 2
 
-    if char == 's':
+    if char == "s":
         command.rMOD = 3
 
     # If the command entered is a int, assign this value to rPRA
@@ -90,22 +90,22 @@ def genCommand(char, command):
     except ValueError:
         pass
 
-    if char == 'f':
+    if char == "f":
         command.rSPA += 25
         if command.rSPA > 255:
             command.rSPA = 255
 
-    if char == 'l':
+    if char == "l":
         command.rSPA -= 25
         if command.rSPA < 0:
             command.rSPA = 0
 
-    if char == 'i':
+    if char == "i":
         command.rFRA += 25
         if command.rFRA > 255:
             command.rFRA = 255
 
-    if char == 'd':
+    if char == "d":
         command.rFRA -= 25
         if command.rFRA < 0:
             command.rFRA = 0
@@ -116,17 +116,17 @@ def genCommand(char, command):
 def askForCommand(command):
     """Ask the user for a command to send to the gripper."""
 
-    currentCommand = 'Simple 3F gripper Controller\n-----\nCurrent command:'
-    currentCommand += ' rACT = ' + str(command.rACT)
-    currentCommand += ', rMOD = ' + str(command.rMOD)
-    currentCommand += ', rGTO = ' + str(command.rGTO)
-    currentCommand += ', rATR = ' + str(command.rATR)
+    currentCommand = "Simple 3F gripper Controller\n-----\nCurrent command:"
+    currentCommand += " rACT = " + str(command.rACT)
+    currentCommand += ", rMOD = " + str(command.rMOD)
+    currentCommand += ", rGTO = " + str(command.rGTO)
+    currentCommand += ", rATR = " + str(command.rATR)
     ##    currentCommand += ', rGLV = ' + str(command.rGLV)
     ##    currentCommand += ', rICF = ' + str(command.rICF)
     ##    currentCommand += ', rICS = ' + str(command.rICS)
-    currentCommand += ', rPRA = ' + str(command.rPRA)
-    currentCommand += ', rSPA = ' + str(command.rSPA)
-    currentCommand += ', rFRA = ' + str(command.rFRA)
+    currentCommand += ", rPRA = " + str(command.rPRA)
+    currentCommand += ", rSPA = " + str(command.rSPA)
+    currentCommand += ", rFRA = " + str(command.rFRA)
 
     # We only show the simple control mode
     ##    currentCommand += ', rPRB = ' + str(command.rPRB)
@@ -141,22 +141,22 @@ def askForCommand(command):
 
     print(currentCommand)
 
-    strAskForCommand = '-----\nAvailable commands\n\n'
-    strAskForCommand += 'r: Reset\n'
-    strAskForCommand += 'a: Activate\n'
-    strAskForCommand += 'c: Close\n'
-    strAskForCommand += 'o: Open\n'
-    strAskForCommand += 'b: Basic mode\n'
-    strAskForCommand += 'p: Pinch mode\n'
-    strAskForCommand += 'w: Wide mode\n'
-    strAskForCommand += 's: Scissor mode\n'
-    strAskForCommand += '(0-255): Go to that position\n'
-    strAskForCommand += 'f: Faster\n'
-    strAskForCommand += 'l: Slower\n'
-    strAskForCommand += 'i: Increase force\n'
-    strAskForCommand += 'd: Decrease force\n'
+    strAskForCommand = "-----\nAvailable commands\n\n"
+    strAskForCommand += "r: Reset\n"
+    strAskForCommand += "a: Activate\n"
+    strAskForCommand += "c: Close\n"
+    strAskForCommand += "o: Open\n"
+    strAskForCommand += "b: Basic mode\n"
+    strAskForCommand += "p: Pinch mode\n"
+    strAskForCommand += "w: Wide mode\n"
+    strAskForCommand += "s: Scissor mode\n"
+    strAskForCommand += "(0-255): Go to that position\n"
+    strAskForCommand += "f: Faster\n"
+    strAskForCommand += "l: Slower\n"
+    strAskForCommand += "i: Increase force\n"
+    strAskForCommand += "d: Decrease force\n"
 
-    strAskForCommand += '-->'
+    strAskForCommand += "-->"
 
     return input(strAskForCommand)
 
@@ -164,9 +164,9 @@ def askForCommand(command):
 def publisher():
     """Main loop which requests new commands and publish them on the Robotiq3FGripperRobotOutput topic."""
 
-    rospy.init_node('Robotiq3FGripperSimpleController')
+    rospy.init_node("Robotiq3FGripperSimpleController")
 
-    pub = rospy.Publisher('Robotiq3FGripperRobotOutput', Robotiq3FGripperRobotOutput)
+    pub = rospy.Publisher("Robotiq3FGripperRobotOutput", Robotiq3FGripperRobotOutput)
 
     command = Robotiq3FGripperRobotOutput()
 
@@ -178,5 +178,5 @@ def publisher():
         rospy.sleep(0.1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     publisher()

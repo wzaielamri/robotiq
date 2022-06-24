@@ -26,8 +26,9 @@
 
 using namespace robotiq_3f_gripper_control;
 
-Robotiq3FGripperHWInterface::Robotiq3FGripperHWInterface(ros::NodeHandle nh, boost::shared_ptr<Robotiq3FGripperAPI> driver)
-    :hw_driver_(driver)
+Robotiq3FGripperHWInterface::Robotiq3FGripperHWInterface(ros::NodeHandle nh,
+                                                         boost::shared_ptr<Robotiq3FGripperAPI> driver)
+    : hw_driver_(driver)
 {
     double rate;
     nh.param<double>("update_rate", rate, 20);
@@ -38,14 +39,14 @@ Robotiq3FGripperHWInterface::Robotiq3FGripperHWInterface(ros::NodeHandle nh, boo
     std::string prefix;
     prefix = nh.param<std::string>("prefix", "");
 
-    joint_names_.push_back(prefix+"finger_1_joint_1");
-    joint_names_.push_back(prefix+"finger_2_joint_1");
-    joint_names_.push_back(prefix+"finger_middle_joint_1");
-    joint_names_.push_back(prefix+"palm_finger_1_joint");
+    joint_names_.push_back(prefix + "finger_1_joint_1");
+    joint_names_.push_back(prefix + "finger_2_joint_1");
+    joint_names_.push_back(prefix + "finger_middle_joint_1");
+    joint_names_.push_back(prefix + "palm_finger_1_joint");
 
-    joint_names_ = nh.param< std::vector<std::string> >("joint_names", joint_names_);
+    joint_names_ = nh.param<std::vector<std::string> >("joint_names", joint_names_);
 
-    if(joint_names_.size()!=4)
+    if (joint_names_.size() != 4)
     {
         throw std::runtime_error("There must be 4 joint names");
     }
@@ -57,30 +58,26 @@ Robotiq3FGripperHWInterface::Robotiq3FGripperHWInterface(ros::NodeHandle nh, boo
     j_cmd_pos_.resize(4, 0);
 
     hw_diagnostics_.reset(new Robotiq3FGripperDiagnostics(hw_driver_, hw_name));
-    hw_ros_.reset(new Robotiq3FGripperROS(nh, hw_driver_, joint_names_, ros::Duration(1/rate)));
+    hw_ros_.reset(new Robotiq3FGripperROS(nh, hw_driver_, joint_names_, ros::Duration(1 / rate)));
 }
 
-void Robotiq3FGripperHWInterface::configure(hardware_interface::JointStateInterface &joint_state_interface, hardware_interface::PositionJointInterface &joint_position_interface)
+void Robotiq3FGripperHWInterface::configure(hardware_interface::JointStateInterface& joint_state_interface,
+                                            hardware_interface::PositionJointInterface& joint_position_interface)
 {
     //! Connect and register jonit state interface
     for (std::size_t joint_id = 0; joint_id < 4; ++joint_id)
     {
         // Create joint state interface
         joint_state_interface.registerHandle(hardware_interface::JointStateHandle(
-                                                  joint_names_[joint_id],
-                                                  &j_curr_pos_[joint_id],
-                                                  &j_curr_vel_[joint_id],
-                                                  &j_curr_eff_[joint_id]));
-
+            joint_names_[joint_id], &j_curr_pos_[joint_id], &j_curr_vel_[joint_id], &j_curr_eff_[joint_id]));
     }
 
     //! Connect and register joint position interface
-    for(std::size_t joint_id = 0; joint_id < 4; ++joint_id)
+    for (std::size_t joint_id = 0; joint_id < 4; ++joint_id)
     {
         // Create joint position interface
         joint_position_interface.registerHandle(hardware_interface::JointHandle(
-                                                     joint_state_interface.getHandle(joint_names_[joint_id]),
-                                                     &j_cmd_pos_[joint_id]));
+            joint_state_interface.getHandle(joint_names_[joint_id]), &j_cmd_pos_[joint_id]));
     }
 }
 

@@ -26,10 +26,9 @@
 
 using namespace robotiq_3f_gripper_control;
 
-Robotiq3FGripperROS::Robotiq3FGripperROS(ros::NodeHandle &nh, boost::shared_ptr<Robotiq3FGripperAPI> driver, std::vector<std::string> joint_names, ros::Duration desired_update_freq)
-    :nh_(nh)
-    ,driver_(driver)
-    ,desired_update_freq_(desired_update_freq)
+Robotiq3FGripperROS::Robotiq3FGripperROS(ros::NodeHandle& nh, boost::shared_ptr<Robotiq3FGripperAPI> driver,
+                                         std::vector<std::string> joint_names, ros::Duration desired_update_freq)
+    : nh_(nh), driver_(driver), desired_update_freq_(desired_update_freq)
 {
     //! advertise services
     init_srv_ = nh_.advertiseService("init", &Robotiq3FGripperROS::handleInit, this);
@@ -49,7 +48,7 @@ Robotiq3FGripperROS::Robotiq3FGripperROS(ros::NodeHandle &nh, boost::shared_ptr<
     ReconfigureServer::CallbackType f = boost::bind(&Robotiq3FGripperROS::handleReconfigure, this, _1, _2);
     reconfigure_->setCallback(f);
 
-    if(joint_names.size() != 4)
+    if (joint_names.size() != 4)
     {
         ROS_FATAL("Joint name size must be 4");
     }
@@ -61,13 +60,13 @@ void Robotiq3FGripperROS::publish()
     input_status_pub_.publish(input_status_msg_);
 }
 
-bool Robotiq3FGripperROS::handleInit(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp)
+bool Robotiq3FGripperROS::handleInit(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp)
 {
     ROS_DEBUG_NAMED("RobotiqCANROS", "entered handle_init");
     //! set controller state (INIT_ACTIVATION)
     driver_->setInitialization(INIT_ACTIVATION);
     //! wait for controller state (GRIPPER_READY)
-    while(!driver_->isReady())
+    while (!driver_->isReady())
     {
         desired_update_freq_.sleep();
     }
@@ -75,7 +74,7 @@ bool Robotiq3FGripperROS::handleInit(std_srvs::TriggerRequest &req, std_srvs::Tr
     //! set action mode to go (ACTION_GO)
     driver_->setActionMode(ACTION_GO);
     //! wait for controller state (ACTION_GO)
-    while(driver_->isHalted())
+    while (driver_->isHalted())
     {
         desired_update_freq_.sleep();
     }
@@ -84,7 +83,7 @@ bool Robotiq3FGripperROS::handleInit(std_srvs::TriggerRequest &req, std_srvs::Tr
     return true;
 }
 
-bool Robotiq3FGripperROS::handleReset(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp)
+bool Robotiq3FGripperROS::handleReset(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp)
 {
     ROS_DEBUG_NAMED("RobotiqCANROS", "entered handle_reset");
     //! shutdown
@@ -94,11 +93,11 @@ bool Robotiq3FGripperROS::handleReset(std_srvs::TriggerRequest &req, std_srvs::T
     return true;
 }
 
-bool Robotiq3FGripperROS::handleHalt(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp)
+bool Robotiq3FGripperROS::handleHalt(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp)
 {
     ROS_DEBUG_NAMED("RobotiqCANROS", "entered handle_halt");
     //! check for activation
-    if(!driver_->isInitialized())
+    if (!driver_->isInitialized())
     {
         resp.success = false;
         resp.message = "Not initialized. ";
@@ -107,7 +106,7 @@ bool Robotiq3FGripperROS::handleHalt(std_srvs::TriggerRequest &req, std_srvs::Tr
     //! set controller state (ACTION_STOP)
     driver_->setActionMode(ACTION_STOP);
     //! wait for controller state (ACTION_STOP)
-    while(!driver_->isHalted())
+    while (!driver_->isHalted())
     {
         desired_update_freq_.sleep();
     }
@@ -116,7 +115,7 @@ bool Robotiq3FGripperROS::handleHalt(std_srvs::TriggerRequest &req, std_srvs::Tr
     return true;
 }
 
-bool Robotiq3FGripperROS::handleEmergRelease(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp)
+bool Robotiq3FGripperROS::handleEmergRelease(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp)
 {
     ROS_DEBUG_NAMED("RobotiqCANROS", "entered handle_emerg_release");
     //! halt
@@ -124,17 +123,16 @@ bool Robotiq3FGripperROS::handleEmergRelease(std_srvs::TriggerRequest &req, std_
     //! set controller state (EMERGENCY_RELEASE_ENGAGED)
     driver_->setEmergencyRelease(EMERGENCY_RELEASE_ENGAGED);
     //! wait for controller state (ERROR_AUTOMATIC_RELEASE_COMPLETED)
-    while(!driver_->isEmergReleaseComplete())
+    while (!driver_->isEmergReleaseComplete())
     {
         desired_update_freq_.sleep();
     }
     driver_->setEmergencyRelease(EMERGENCY_RELEASE_IDLE);
     resp.success = true;
     resp.message += "Emergency release complete. ";
-
 }
 
-bool Robotiq3FGripperROS::handleShutdown(std_srvs::TriggerRequest &req, std_srvs::TriggerResponse &resp)
+bool Robotiq3FGripperROS::handleShutdown(std_srvs::TriggerRequest& req, std_srvs::TriggerResponse& resp)
 {
     ROS_DEBUG_NAMED("RobotiqCANROS", "entered handle_shutdown");
     //! halt
@@ -142,28 +140,28 @@ bool Robotiq3FGripperROS::handleShutdown(std_srvs::TriggerRequest &req, std_srvs
     //! set controller state (INIT_RESET)
     driver_->setInitialization(INIT_RESET);
     //! wait for controller state (INIT_RESET)
-    while(driver_->isInitialized())
+    while (driver_->isInitialized())
     {
         desired_update_freq_.sleep();
     }
     resp.success = true;
     resp.message += "Shutdown complete. ";
     return true;
-
 }
 
-void Robotiq3FGripperROS::handleReconfigure(robotiq_3f_gripper_control::Robotiq3FGripperConfig &config, uint32_t level)
+void Robotiq3FGripperROS::handleReconfigure(robotiq_3f_gripper_control::Robotiq3FGripperConfig& config, uint32_t level)
 {
     ROS_DEBUG_NAMED("RobotiqCANROS", "entered handle_reconfigure");
-    driver_->setInidividualControlMode((robotiq::IndividualControl)config.ind_control_fingers, (robotiq::IndividualControl)config.ind_control_scissor);
+    driver_->setInidividualControlMode((robotiq::IndividualControl)config.ind_control_fingers,
+                                       (robotiq::IndividualControl)config.ind_control_scissor);
     if (!config.ind_control_scissor)
     {
         driver_->setGraspingMode((robotiq::GraspingMode)config.mode);
 
-        while(!driver_->isModeSet((robotiq::GraspingMode)config.mode))
+        while (!driver_->isModeSet((robotiq::GraspingMode)config.mode))
         {
             desired_update_freq_.sleep();
-            ROS_DEBUG_STREAM("waiting for mode "<<config.mode<<" to be set");
+            ROS_DEBUG_STREAM("waiting for mode " << config.mode << " to be set");
         }
     }
     //! @todo automatically switch controller based on mode?
@@ -175,17 +173,18 @@ void Robotiq3FGripperROS::handleReconfigure(robotiq_3f_gripper_control::Robotiq3
     config_ = config;
 }
 
-void Robotiq3FGripperROS::updateConfig(const robotiq_3f_gripper_control::Robotiq3FGripperConfig &config)
+void Robotiq3FGripperROS::updateConfig(const robotiq_3f_gripper_control::Robotiq3FGripperConfig& config)
 {
     reconfigure_->updateConfig(config);
 }
 
-void Robotiq3FGripperROS::getCurrentConfig(robotiq_3f_gripper_control::Robotiq3FGripperConfig &config)
+void Robotiq3FGripperROS::getCurrentConfig(robotiq_3f_gripper_control::Robotiq3FGripperConfig& config)
 {
     config = config_;
 }
 
-void Robotiq3FGripperROS::handleRawCmd(const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr &msg)
+void Robotiq3FGripperROS::handleRawCmd(
+    const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr& msg)
 {
     ROS_DEBUG_NAMED("RobotiqCANROS", "entered handle_raw_cmd");
     driver_->setRaw(*msg);

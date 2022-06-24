@@ -34,14 +34,13 @@
 
 namespace robotiq_3f_gripper_control
 {
-
 class Robotiq3FGripperHWInterface : public hardware_interface::RobotHW
 {
 public:
     Robotiq3FGripperHWInterface(ros::NodeHandle nh, boost::shared_ptr<Robotiq3FGripperAPI> driver);
 
-    void configure(hardware_interface::JointStateInterface &joint_state_interface,
-                   hardware_interface::PositionJointInterface &joint_position_interface);
+    void configure(hardware_interface::JointStateInterface& joint_state_interface,
+                   hardware_interface::PositionJointInterface& joint_position_interface);
     void read(ros::Duration d);
     void write(ros::Duration d);
 
@@ -57,6 +56,6 @@ protected:
     boost::shared_ptr<Robotiq3FGripperDiagnostics> hw_diagnostics_;
     boost::shared_ptr<Robotiq3FGripperROS> hw_ros_;
 };
-}
+}  // namespace robotiq_3f_gripper_control
 
-#endif //ROBOTIQ_3F_GRIPPER_HW_INTERFACE_H
+#endif  // ROBOTIQ_3F_GRIPPER_HW_INTERFACE_H

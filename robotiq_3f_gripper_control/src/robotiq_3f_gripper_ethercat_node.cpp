@@ -35,9 +35,8 @@ static const double BILLION = 1000000000.0;
 class GenericHWLoop
 {
 public:
-    GenericHWLoop(
-            const ros::NodeHandle& nh,
-            boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperHWInterface> hardware_interface)
+    GenericHWLoop(const ros::NodeHandle& nh,
+                  boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperHWInterface> hardware_interface)
         : nh_(nh), name_("generic_hw_control_loop"), hardware_interface_(hardware_interface)
     {
         ROS_DEBUG("creating loop");
@@ -70,18 +69,19 @@ public:
     {
         //! Get change in time
         clock_gettime(CLOCK_MONOTONIC, &current_time_);
-        elapsed_time_ = ros::Duration(current_time_.tv_sec - last_time_.tv_sec
-                                      + (current_time_.tv_nsec - last_time_.tv_nsec) / BILLION);
+        elapsed_time_ = ros::Duration(current_time_.tv_sec - last_time_.tv_sec +
+                                      (current_time_.tv_nsec - last_time_.tv_nsec) / BILLION);
         last_time_ = current_time_;
-        ROS_DEBUG_STREAM_THROTTLE_NAMED(1, "GenericHWLoop","Sampled update loop with elapsed time " << elapsed_time_.toSec());
+        ROS_DEBUG_STREAM_THROTTLE_NAMED(1, "GenericHWLoop",
+                                        "Sampled update loop with elapsed time " << elapsed_time_.toSec());
 
         //! Error check cycle time
         const double cycle_time_error = (elapsed_time_ - desired_update_freq_).toSec();
         if (cycle_time_error > cycle_time_error_threshold_)
         {
             ROS_WARN_STREAM_NAMED(name_, "Cycle time exceeded error threshold by: "
-                                  << cycle_time_error << ", cycle time: " << elapsed_time_
-                                  << ", threshold: " << cycle_time_error_threshold_);
+                                             << cycle_time_error << ", cycle time: " << elapsed_time_
+                                             << ", threshold: " << cycle_time_error_threshold_);
         }
 
         //! Input
@@ -126,9 +126,8 @@ protected:
 
 int main(int argc, char** argv)
 {
-
-    using robotiq_ethercat::EtherCatManager;
     using robotiq_3f_gripper_control::Robotiq3FGripperEtherCatClient;
+    using robotiq_ethercat::EtherCatManager;
     ros::init(argc, argv, "robotiq_3f_gripper_node");
     ros::NodeHandle nh;
     ros::NodeHandle pnh("~");
@@ -151,17 +150,17 @@ int main(int argc, char** argv)
     EtherCatManager manager(ifname);
 
     // Create the hw client layer
-    boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperEtherCatClient> ethercat_client
-            (new robotiq_3f_gripper_control::Robotiq3FGripperEtherCatClient(manager, slave_no));
+    boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperEtherCatClient> ethercat_client(
+        new robotiq_3f_gripper_control::Robotiq3FGripperEtherCatClient(manager, slave_no));
     ethercat_client->init(pnh);
 
     // Create the hw api layer
-    boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperAPI> hw_api
-            (new robotiq_3f_gripper_control::Robotiq3FGripperAPI(ethercat_client));
+    boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperAPI> hw_api(
+        new robotiq_3f_gripper_control::Robotiq3FGripperAPI(ethercat_client));
 
     // Create the hardware interface layer
-    boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperHWInterface> hw_interface
-            (new robotiq_3f_gripper_control::Robotiq3FGripperHWInterface(pnh, hw_api));
+    boost::shared_ptr<robotiq_3f_gripper_control::Robotiq3FGripperHWInterface> hw_interface(
+        new robotiq_3f_gripper_control::Robotiq3FGripperHWInterface(pnh, hw_api));
 
     ROS_DEBUG("created hw interface");
 
@@ -183,4 +182,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-

@@ -31,14 +31,15 @@
 
 namespace robotiq_3f_gripper_control
 {
-
 class Robotiq3FGripperClientBase
 {
 public:
     typedef robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput GripperOutput;
     typedef robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotInput GripperInput;
 
-    virtual void init(ros::NodeHandle nh) {}
+    virtual void init(ros::NodeHandle nh)
+    {
+    }
 
     /**
      * \brief Write the given set of control flags to the memory of the gripper
@@ -59,13 +60,16 @@ public:
      */
     virtual GripperOutput readOutputs() const = 0;
 
-    virtual ~Robotiq3FGripperClientBase() {}
+    virtual ~Robotiq3FGripperClientBase()
+    {
+    }
 
 protected:
-    Robotiq3FGripperClientBase() {}
-
+    Robotiq3FGripperClientBase()
+    {
+    }
 };
 
-} //end namespace robotiq_3f_gripper_control
+}  // end namespace robotiq_3f_gripper_control
 
-#endif // ROBOTIQ_3F_GRIPPER_CLIENT_BASE_H
+#endif  // ROBOTIQ_3F_GRIPPER_CLIENT_BASE_H

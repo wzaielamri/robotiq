@@ -125,7 +125,12 @@ class robotiqbaseRobotiq3FGripper:
         self.message = []
 
         # Build the command with each output variable
-        self.message.append(command.rACT + (command.rMOD << 1) + (command.rGTO << 3) + (command.rATR << 4))
+        self.message.append(
+            command.rACT
+            + (command.rMOD << 1)
+            + (command.rGTO << 3)
+            + (command.rATR << 4)
+        )
         self.message.append(command.rGLV + (command.rICF << 2) + (command.rICS << 3))
         self.message.append(0)
         self.message.append(command.rPRA)
@@ -150,21 +155,21 @@ class robotiqbaseRobotiq3FGripper:
         """Request the status from the gripper and return it in the Robotiq3FGripper_robot_input msg type."""
 
         # Acquire status from the Gripper
-        status = self.client.getStatus(16);
+        status = self.client.getStatus(16)
 
         # Message to output
         message = Robotiq3FGripperRobotInput()
 
         # Assign the values to their respective variables
-        message.gACT = (status[0] >> 0) & 0x01;
-        message.gMOD = (status[0] >> 1) & 0x03;
-        message.gGTO = (status[0] >> 3) & 0x01;
-        message.gIMC = (status[0] >> 4) & 0x03;
-        message.gSTA = (status[0] >> 6) & 0x03;
-        message.gDTA = (status[1] >> 0) & 0x03;
-        message.gDTB = (status[1] >> 2) & 0x03;
-        message.gDTC = (status[1] >> 4) & 0x03;
-        message.gDTS = (status[1] >> 6) & 0x03;
+        message.gACT = (status[0] >> 0) & 0x01
+        message.gMOD = (status[0] >> 1) & 0x03
+        message.gGTO = (status[0] >> 3) & 0x01
+        message.gIMC = (status[0] >> 4) & 0x03
+        message.gSTA = (status[0] >> 6) & 0x03
+        message.gDTA = (status[1] >> 0) & 0x03
+        message.gDTB = (status[1] >> 2) & 0x03
+        message.gDTC = (status[1] >> 4) & 0x03
+        message.gDTS = (status[1] >> 6) & 0x03
         message.gFLT = status[2]
         message.gPRA = status[3]
         message.gPOA = status[4]

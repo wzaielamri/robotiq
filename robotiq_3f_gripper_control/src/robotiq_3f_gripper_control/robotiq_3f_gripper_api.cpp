@@ -27,8 +27,7 @@
 using namespace robotiq_3f_gripper_control;
 using namespace robotiq;
 
-Robotiq3FGripperAPI::Robotiq3FGripperAPI(boost::shared_ptr<Robotiq3FGripperClientBase> base)
-    :base_(base)
+Robotiq3FGripperAPI::Robotiq3FGripperAPI(boost::shared_ptr<Robotiq3FGripperClientBase> base) : base_(base)
 {
     pos_to_ticks_ = 200;
     pos_offset_ = 0;
@@ -77,60 +76,65 @@ void Robotiq3FGripperAPI::setInidividualControlMode(IndividualControl fingers, I
     command_.rICS = (Robotiq3FGripperClientBase::GripperOutput::_rICS_type)scissor;
 }
 
-void Robotiq3FGripperAPI::setPosition(const double &posA, const double &posB, const double &posC, const double &posS)
+void Robotiq3FGripperAPI::setPosition(const double& posA, const double& posB, const double& posC, const double& posS)
 {
-    command_.rPRA = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRA_type>(pos_to_ticks_*(posA - pos_offset_));
-    command_.rPRB = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRB_type>(pos_to_ticks_*(posB - pos_offset_));
-    command_.rPRC = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRC_type>(pos_to_ticks_*(posC - pos_offset_));
-    command_.rPRS = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRS_type>(sci_to_ticks_*(posS - sci_offset_));
+    command_.rPRA = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRA_type>(pos_to_ticks_ * (posA - pos_offset_));
+    command_.rPRB = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRB_type>(pos_to_ticks_ * (posB - pos_offset_));
+    command_.rPRC = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRC_type>(pos_to_ticks_ * (posC - pos_offset_));
+    command_.rPRS = limit<Robotiq3FGripperClientBase::GripperOutput::_rPRS_type>(sci_to_ticks_ * (posS - sci_offset_));
 }
 
-void Robotiq3FGripperAPI::setVelocity(const double &velA, const double &velB, const double &velC, const double &velS)
+void Robotiq3FGripperAPI::setVelocity(const double& velA, const double& velB, const double& velC, const double& velS)
 {
-    command_.rSPA = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPA_type>(vel_to_ticks_*(velA - vel_offset_));
-    command_.rSPB = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPB_type>(vel_to_ticks_*(velB - vel_offset_));
-    command_.rSPC = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPC_type>(vel_to_ticks_*(velC - vel_offset_));
-    command_.rSPS = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPS_type>(vel_to_ticks_*(velS - vel_offset_));
+    command_.rSPA = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPA_type>(vel_to_ticks_ * (velA - vel_offset_));
+    command_.rSPB = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPB_type>(vel_to_ticks_ * (velB - vel_offset_));
+    command_.rSPC = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPC_type>(vel_to_ticks_ * (velC - vel_offset_));
+    command_.rSPS = limit<Robotiq3FGripperClientBase::GripperOutput::_rSPS_type>(vel_to_ticks_ * (velS - vel_offset_));
 }
 
-void Robotiq3FGripperAPI::setForce(const double &fA, const double &fB, const double &fC, const double &fS)
+void Robotiq3FGripperAPI::setForce(const double& fA, const double& fB, const double& fC, const double& fS)
 {
-    command_.rFRA = limit<Robotiq3FGripperClientBase::GripperOutput::_rFRA_type>(force_to_ticks_*(fA - force_offset_));
-    command_.rFRB = limit<Robotiq3FGripperClientBase::GripperOutput::_rFRB_type>(force_to_ticks_*(fB - force_offset_));
-    command_.rFRC = limit<Robotiq3FGripperClientBase::GripperOutput::_rFRC_type>(force_to_ticks_*(fC - force_offset_));
-    command_.rFRS = limit<Robotiq3FGripperClientBase::GripperOutput::_rFRS_type>(force_to_ticks_*(fS - force_offset_));
+    command_.rFRA =
+        limit<Robotiq3FGripperClientBase::GripperOutput::_rFRA_type>(force_to_ticks_ * (fA - force_offset_));
+    command_.rFRB =
+        limit<Robotiq3FGripperClientBase::GripperOutput::_rFRB_type>(force_to_ticks_ * (fB - force_offset_));
+    command_.rFRC =
+        limit<Robotiq3FGripperClientBase::GripperOutput::_rFRC_type>(force_to_ticks_ * (fC - force_offset_));
+    command_.rFRS =
+        limit<Robotiq3FGripperClientBase::GripperOutput::_rFRS_type>(force_to_ticks_ * (fS - force_offset_));
 }
 
-void Robotiq3FGripperAPI::setRaw(const Robotiq3FGripperClientBase::GripperOutput &raw)
+void Robotiq3FGripperAPI::setRaw(const Robotiq3FGripperClientBase::GripperOutput& raw)
 {
     command_ = raw;
 }
 
-void Robotiq3FGripperAPI::getPosition(double *posA, double *posB, double *posC, double *posS) const
+void Robotiq3FGripperAPI::getPosition(double* posA, double* posB, double* posC, double* posS) const
 {
-    *posA = (double)status_.gPOA/pos_to_ticks_ + pos_offset_;
-    *posB = (double)status_.gPOB/pos_to_ticks_ + pos_offset_;
-    *posC = (double)status_.gPOC/pos_to_ticks_ + pos_offset_;
-    *posS = (double)status_.gPOS/sci_to_ticks_ + sci_offset_;
+    *posA = (double)status_.gPOA / pos_to_ticks_ + pos_offset_;
+    *posB = (double)status_.gPOB / pos_to_ticks_ + pos_offset_;
+    *posC = (double)status_.gPOC / pos_to_ticks_ + pos_offset_;
+    *posS = (double)status_.gPOS / sci_to_ticks_ + sci_offset_;
 }
 
-void Robotiq3FGripperAPI::getPositionCmd(double *posA, double *posB, double *posC, double *posS) const
+void Robotiq3FGripperAPI::getPositionCmd(double* posA, double* posB, double* posC, double* posS) const
 {
-    *posA = (double)status_.gPRA/pos_to_ticks_ + pos_offset_;
-    *posB = (double)status_.gPRB/pos_to_ticks_ + pos_offset_;
-    *posC = (double)status_.gPRC/pos_to_ticks_ + pos_offset_;
-    *posS = (double)status_.gPRS/sci_to_ticks_ + sci_offset_;
+    *posA = (double)status_.gPRA / pos_to_ticks_ + pos_offset_;
+    *posB = (double)status_.gPRB / pos_to_ticks_ + pos_offset_;
+    *posC = (double)status_.gPRC / pos_to_ticks_ + pos_offset_;
+    *posS = (double)status_.gPRS / sci_to_ticks_ + sci_offset_;
 }
 
-void Robotiq3FGripperAPI::getCurrent(double *curA, double *curB, double *curC, double *curS) const
+void Robotiq3FGripperAPI::getCurrent(double* curA, double* curB, double* curC, double* curS) const
 {
-    *curA = (double)status_.gCUA/cur_to_ticks_;
-    *curB = (double)status_.gCUB/cur_to_ticks_;
-    *curC = (double)status_.gCUC/cur_to_ticks_;
-    *curS = (double)status_.gCUS/cur_to_ticks_;
+    *curA = (double)status_.gCUA / cur_to_ticks_;
+    *curB = (double)status_.gCUB / cur_to_ticks_;
+    *curC = (double)status_.gCUC / cur_to_ticks_;
+    *curS = (double)status_.gCUS / cur_to_ticks_;
 }
 
-void Robotiq3FGripperAPI::getGripperStatus(InitializationMode *gACT, GraspingMode *gMOD, ActionMode *gGTO, GripperStatus *gIMC, MotionStatus *gSTA) const
+void Robotiq3FGripperAPI::getGripperStatus(InitializationMode* gACT, GraspingMode* gMOD, ActionMode* gGTO,
+                                           GripperStatus* gIMC, MotionStatus* gSTA) const
 {
     *gACT = (InitializationMode)status_.gACT;
     *gMOD = (GraspingMode)status_.gMOD;
@@ -139,12 +143,12 @@ void Robotiq3FGripperAPI::getGripperStatus(InitializationMode *gACT, GraspingMod
     *gSTA = (MotionStatus)status_.gSTA;
 }
 
-void Robotiq3FGripperAPI::getFaultStatus(FaultStatus *gFLT) const
+void Robotiq3FGripperAPI::getFaultStatus(FaultStatus* gFLT) const
 {
     *gFLT = (FaultStatus)status_.gFLT;
 }
 
-void Robotiq3FGripperAPI::getObjectStatus(ObjectStatus *fA, ObjectStatus *fB, ObjectStatus *fC, ObjectStatus *fS) const
+void Robotiq3FGripperAPI::getObjectStatus(ObjectStatus* fA, ObjectStatus* fB, ObjectStatus* fC, ObjectStatus* fS) const
 {
     *fA = (ObjectStatus)status_.gDTA;
     *fB = (ObjectStatus)status_.gDTB;
@@ -152,17 +156,17 @@ void Robotiq3FGripperAPI::getObjectStatus(ObjectStatus *fA, ObjectStatus *fB, Ob
     *fS = (ObjectStatus)status_.gDTS;
 }
 
-void Robotiq3FGripperAPI::getRaw(Robotiq3FGripperClientBase::GripperInput *raw) const
+void Robotiq3FGripperAPI::getRaw(Robotiq3FGripperClientBase::GripperInput* raw) const
 {
     *raw = status_;
 }
 
-void Robotiq3FGripperAPI::getCommandPos(double *posA, double *posB, double *posC, double *posS) const
+void Robotiq3FGripperAPI::getCommandPos(double* posA, double* posB, double* posC, double* posS) const
 {
-    *posA = (double)command_.rPRA/pos_to_ticks_ + pos_offset_;
-    *posB = (double)command_.rPRB/pos_to_ticks_ + pos_offset_;
-    *posC = (double)command_.rPRC/pos_to_ticks_ + pos_offset_;
-    *posS = (double)command_.rPRS/sci_to_ticks_ + sci_offset_;
+    *posA = (double)command_.rPRA / pos_to_ticks_ + pos_offset_;
+    *posB = (double)command_.rPRB / pos_to_ticks_ + pos_offset_;
+    *posC = (double)command_.rPRC / pos_to_ticks_ + pos_offset_;
+    *posS = (double)command_.rPRS / sci_to_ticks_ + sci_offset_;
 }
 
 bool Robotiq3FGripperAPI::isInitialized()

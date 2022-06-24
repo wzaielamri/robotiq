@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef GAZEBO_ROBOTIQ_HAND_PLUGIN_HH
 #define GAZEBO_ROBOTIQ_HAND_PLUGIN_HH
@@ -55,236 +55,283 @@
 ///                   This parameter is optional.
 class RobotiqHandPlugin : public gazebo::ModelPlugin
 {
+    friend class gazebo::common::PID;
+    /// \brief Hand states.
+    enum State
+    {
+        Disabled = 0,
+        Emergency,
+        ICS,
+        ICF,
+        ChangeModeInProgress,
+        Simplified
+    };
 
+    /// \brief Different grasping modes.
+    enum GraspingMode
+    {
+        Basic = 0,
+        Pinch,
+        Wide,
+        Scissor
+    };
 
-  
-  friend class gazebo::common::PID;
-  /// \brief Hand states.
-  enum State
-  {
-    Disabled = 0,
-    Emergency,
-    ICS,
-    ICF,
-    ChangeModeInProgress,
-    Simplified
-  };
+    /// \brief Constructor.
+public:
+    RobotiqHandPlugin();
 
-  /// \brief Different grasping modes.
-  enum GraspingMode
-  {
-    Basic = 0,
-    Pinch,
-    Wide,
-    Scissor
-  };
+    /// \brief Destructor.
+public:
+    virtual ~RobotiqHandPlugin();
 
-  /// \brief Constructor.
-  public: RobotiqHandPlugin();
+    // Documentation inherited.
+public:
+    void Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf);
 
-  /// \brief Destructor.
-  public: virtual ~RobotiqHandPlugin();
+    /// \brief ROS callback queue thread.
+private:
+    void RosQueueThread();
 
-  // Documentation inherited.
-  public: void Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+    /// \brief ROS topic callback to update Robotiq Hand Control Commands.
+    /// \param[in] _msg Incoming ROS message with the next hand command.
+private:
+    void SetHandleCommand(const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr& _msg);
 
-  /// \brief ROS callback queue thread.
-  private: void RosQueueThread();
+    /// \brief Update PID Joint controllers.
+    /// \param[in] _dt time step size since last update.
+private:
+    void UpdatePIDControl(double _dt);
 
-  /// \brief ROS topic callback to update Robotiq Hand Control Commands.
-  /// \param[in] _msg Incoming ROS message with the next hand command.
-  private: void SetHandleCommand(
-    const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr &_msg);
+    /// \brief Publish Robotiq Hand state.
+private:
+    void GetAndPublishHandleState();
 
-  /// \brief Update PID Joint controllers.
-  /// \param[in] _dt time step size since last update.
-  private: void UpdatePIDControl(double _dt);
+    /// \brief Publish Robotiq Joint state.
+private:
+    void GetAndPublishJointState(const gazebo::common::Time& _curTime);
 
-  /// \brief Publish Robotiq Hand state.
-  private: void GetAndPublishHandleState();
+    /// \brief Update the controller.
+private:
+    void UpdateStates();
 
-  /// \brief Publish Robotiq Joint state.
-  private: void GetAndPublishJointState(const gazebo::common::Time &_curTime);
+    /// \brief Grab pointers to all the joints.
+    /// \return true on success, false otherwise.
+private:
+    bool FindJoints();
 
-  /// \brief Update the controller.
-  private: void UpdateStates();
+    /// \brief Fully open the hand at half of the maximum speed.
+private:
+    void ReleaseHand();
 
-  /// \brief Grab pointers to all the joints.
-  /// \return true on success, false otherwise.
-  private: bool FindJoints();
+    /// \brief Stop the fingers.
+private:
+    void StopHand();
 
-  /// \brief Fully open the hand at half of the maximum speed.
-  private: void ReleaseHand();
+    /// \brief Checks if the hand is fully open.
+    /// return True when all the fingers are fully open or false otherwise.
+private:
+    bool IsHandFullyOpen();
 
-  /// \brief Stop the fingers.
-  private: void StopHand();
+    /// \brief Internal helper to get the object detection value.
+    /// \param[in] _joint Finger joint.
+    /// \param[in] _index Index of the position PID for this joint.
+    /// \param[in] _rPR Current position request.
+    /// \param[in] _prevrPR Previous position request.
+    /// \return The information on possible object contact:
+    /// 0 Finger is in motion (only meaningful if gGTO = 1).
+    /// 1 Finger has stopped due to a contact while opening.
+    /// 2 Finger has stopped due to a contact while closing.
+    /// 3 Finger is at the requested position.
+private:
+    uint8_t GetObjectDetection(const gazebo::physics::JointPtr& _joint, int _index, uint8_t _rPR, uint8_t _prevrPR);
 
-  /// \brief Checks if the hand is fully open.
-  /// return True when all the fingers are fully open or false otherwise.
-  private: bool IsHandFullyOpen();
+    /// \brief Internal helper to get the actual position of the finger.
+    /// \param[in] _joint Finger joint.
+    /// \return The actual position of the finger. 0 is the minimum position
+    /// (fully open) and 255 is the maximum position (fully closed).
+private:
+    uint8_t GetCurrentPosition(const gazebo::physics::JointPtr& _joint);
 
-  /// \brief Internal helper to get the object detection value.
-  /// \param[in] _joint Finger joint.
-  /// \param[in] _index Index of the position PID for this joint.
-  /// \param[in] _rPR Current position request.
-  /// \param[in] _prevrPR Previous position request.
-  /// \return The information on possible object contact:
-  /// 0 Finger is in motion (only meaningful if gGTO = 1).
-  /// 1 Finger has stopped due to a contact while opening.
-  /// 2 Finger has stopped due to a contact while closing.
-  /// 3 Finger is at the requested position.
-  private: uint8_t GetObjectDetection(const gazebo::physics::JointPtr &_joint,
-                                    int _index, uint8_t _rPR, uint8_t _prevrPR);
+    /// \brief Internal helper to reduce code duplication. If the joint name is
+    /// found, a pointer to the joint is added to a vector of joint pointers.
+    /// \param[in] _jointName Joint name.
+    /// \param[out] _joints Vector of joint pointers.
+    /// \return True when the joint was found or false otherwise.
+private:
+    bool GetAndPushBackJoint(const std::string& _jointName, gazebo::physics::Joint_V& _joints);
 
-  /// \brief Internal helper to get the actual position of the finger.
-  /// \param[in] _joint Finger joint.
-  /// \return The actual position of the finger. 0 is the minimum position
-  /// (fully open) and 255 is the maximum position (fully closed).
-  private: uint8_t GetCurrentPosition(const gazebo::physics::JointPtr &_joint);
+    /// \brief Verify that one command field is within the correct range.
+    /// \param[in] _label Label of the field. E.g.: rACT, rMOD.
+    /// \param[in] _min Minimum value.
+    /// \param[in] _max Maximum value.
+    /// \param[in] _v Value to be verified.
+    /// \return True when the value is within the limits or false otherwise.
+private:
+    bool VerifyField(const std::string& _label, int _min, int _max, int _v);
 
-  /// \brief Internal helper to reduce code duplication. If the joint name is
-  /// found, a pointer to the joint is added to a vector of joint pointers.
-  /// \param[in] _jointName Joint name.
-  /// \param[out] _joints Vector of joint pointers.
-  /// \return True when the joint was found or false otherwise.
-  private: bool GetAndPushBackJoint(const std::string& _jointName,
-                                    gazebo::physics::Joint_V& _joints);
+    /// \brief Verify that all the command fields are within the correct range.
+    /// \param[in] _command Robot output message.
+    /// \return True if all the fields are withing the correct range or false
+    /// otherwise.
+private:
+    bool VerifyCommand(const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr& _command);
 
-  /// \brief Verify that one command field is within the correct range.
-  /// \param[in] _label Label of the field. E.g.: rACT, rMOD.
-  /// \param[in] _min Minimum value.
-  /// \param[in] _max Maximum value.
-  /// \param[in] _v Value to be verified.
-  /// \return True when the value is within the limits or false otherwise.
-  private: bool VerifyField(const std::string &_label, int _min,
-                            int _max, int _v);
+    /// \brief Number of joints in the hand.
+    /// The three fingers can do abduction/adduction.
+    /// Fingers 1 and 2 can do circumduction in one axis.
+private:
+    static const int NumJoints = 5;
 
-  /// \brief Verify that all the command fields are within the correct range.
-  /// \param[in] _command Robot output message.
-  /// \return True if all the fields are withing the correct range or false
-  /// otherwise.
-  private: bool VerifyCommand(
-    const robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput::ConstPtr &_command);
+    /// \brief Velocity tolerance. Below this value we assume that the joint is
+    /// stopped (rad/s).
+private:
+    static constexpr double VelTolerance = 0.002;
 
-  /// \brief Number of joints in the hand.
-  /// The three fingers can do abduction/adduction.
-  /// Fingers 1 and 2 can do circumduction in one axis.
-  private: static const int NumJoints = 5;
+    /// \brief Position tolerance. If the difference between target position and
+    /// current position is within this value we'll conclude that the joint
+    /// reached its target (rad).
+private:
+    static constexpr double PoseTolerance = 0.002;
 
-  /// \brief Velocity tolerance. Below this value we assume that the joint is
-  /// stopped (rad/s).
-  private: static constexpr double VelTolerance = 0.002;
+    /// \brief Min. joint speed (rad/s). Finger is 125mm and tip speed is 22mm/s.
+private:
+    static constexpr double MinVelocity = 0.176;
 
-  /// \brief Position tolerance. If the difference between target position and
-  /// current position is within this value we'll conclude that the joint
-  /// reached its target (rad).
-  private: static constexpr double PoseTolerance = 0.002;
+    /// \brief Max. joint speed (rad/s). Finger is 125mm and tip speed is 110mm/s.
+private:
+    static constexpr double MaxVelocity = 0.88;
 
-  /// \brief Min. joint speed (rad/s). Finger is 125mm and tip speed is 22mm/s.
-  private: static constexpr double MinVelocity = 0.176;
+    /// \brief Default topic name for sending control updates to the left hand.
+private:
+    static const std::string DefaultLeftTopicCommand;
 
-  /// \brief Max. joint speed (rad/s). Finger is 125mm and tip speed is 110mm/s.
-  private: static constexpr double MaxVelocity = 0.88;
+    /// \brief Default topic name for receiving state updates from the left hand.
+private:
+    static const std::string DefaultLeftTopicState;
 
-  /// \brief Default topic name for sending control updates to the left hand.
-  private: static const std::string DefaultLeftTopicCommand;
+    /// \brief Default topic name for sending control updates to the right hand.
+private:
+    static const std::string DefaultRightTopicCommand;
 
-  /// \brief Default topic name for receiving state updates from the left hand.
-  private: static const std::string DefaultLeftTopicState;
+    /// \brief Default topic name for receiving state updates from the right hand.
+private:
+    static const std::string DefaultRightTopicState;
 
-  /// \brief Default topic name for sending control updates to the right hand.
-  private: static const std::string DefaultRightTopicCommand;
+    /// \brief ROS NodeHandle.
+private:
+    boost::scoped_ptr<ros::NodeHandle> rosNode;
 
-  /// \brief Default topic name for receiving state updates from the right hand.
-  private: static const std::string DefaultRightTopicState;
+    /// \brief ROS callback queue.
+private:
+    ros::CallbackQueue rosQueue;
 
-  /// \brief ROS NodeHandle.
-  private: boost::scoped_ptr<ros::NodeHandle> rosNode;
+    /// \brief ROS callback queue thread.
+private:
+    boost::thread callbackQueueThread;
 
-  /// \brief ROS callback queue.
-  private: ros::CallbackQueue rosQueue;
+    // ROS publish multi queue, prevents publish() blocking
+private:
+    PubMultiQueue pmq;
 
-  /// \brief ROS callback queue thread.
-  private: boost::thread callbackQueueThread;
+    /// \brief ROS control interface
+private:
+    ros::Subscriber subHandleCommand;
 
-  // ROS publish multi queue, prevents publish() blocking
-  private: PubMultiQueue pmq;
+    /// \brief HandleControl message. Originally published by user but some of the
+    /// fields might be internally modified. E.g.: When releasing the hand for
+    // changing the grasping mode.
+private:
+    robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput handleCommand;
 
-  /// \brief ROS control interface
-  private: ros::Subscriber subHandleCommand;
+    /// \brief HandleControl message. Last command received before changing the
+    /// grasping mode.
+private:
+    robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput lastHandleCommand;
 
-  /// \brief HandleControl message. Originally published by user but some of the
-  /// fields might be internally modified. E.g.: When releasing the hand for
-  // changing the grasping mode.
-  private: robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput handleCommand;
+    /// \brief Previous command received. We know if the hand is opening or
+    /// closing by comparing the current command and the previous one.
+private:
+    robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput prevCommand;
 
-  /// \brief HandleControl message. Last command received before changing the
-  /// grasping mode.
-  private: robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput lastHandleCommand;
+    /// \brief Original HandleControl message (published by user and unmodified).
+private:
+    robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput userHandleCommand;
 
-  /// \brief Previous command received. We know if the hand is opening or
-  /// closing by comparing the current command and the previous one.
-  private: robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput prevCommand;
+    /// \brief gazebo world update connection.
+private:
+    gazebo::event::ConnectionPtr updateConnection;
 
-  /// \brief Original HandleControl message (published by user and unmodified).
-  private: robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotOutput userHandleCommand;
+    /// \brief keep track of controller update sim-time.
+private:
+    gazebo::common::Time lastControllerUpdateTime;
 
-  /// \brief gazebo world update connection.
-  private: gazebo::event::ConnectionPtr updateConnection;
+    /// \brief Robotiq Hand State.
+private:
+    robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotInput handleState;
 
-  /// \brief keep track of controller update sim-time.
-  private: gazebo::common::Time lastControllerUpdateTime;
+    /// \brief Controller update mutex.
+private:
+    boost::mutex controlMutex;
 
-  /// \brief Robotiq Hand State.
-  private: robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotInput handleState;
+    /// \brief Grasping mode.
+private:
+    GraspingMode graspingMode;
 
-  /// \brief Controller update mutex.
-  private: boost::mutex controlMutex;
+    /// \brief Hand state.
+private:
+    State handState;
 
-  /// \brief Grasping mode.
-  private: GraspingMode graspingMode;
+    /// \brief ROS publisher for Robotiq Hand state.
+private:
+    ros::Publisher pubHandleState;
 
-  /// \brief Hand state.
-  private: State handState;
+    /// \brief ROS publisher queue for Robotiq Hand state.
+private:
+    PubQueue<robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotInput>::Ptr pubHandleStateQueue;
 
-  /// \brief ROS publisher for Robotiq Hand state.
-  private: ros::Publisher pubHandleState;
+    /// \brief Joint state publisher (rviz visualization).
+private:
+    ros::Publisher pubJointStates;
 
-  /// \brief ROS publisher queue for Robotiq Hand state.
-  private: PubQueue<robotiq_3f_gripper_articulated_msgs::Robotiq3FGripperRobotInput>::Ptr pubHandleStateQueue;
+    /// \brief ROS publisher queue for joint states.
+private:
+    PubQueue<sensor_msgs::JointState>::Ptr pubJointStatesQueue;
 
-  /// \brief Joint state publisher (rviz visualization).
-  private: ros::Publisher pubJointStates;
+    /// \brief ROS joint state message.
+private:
+    sensor_msgs::JointState jointStates;
 
-  /// \brief ROS publisher queue for joint states.
-  private: PubQueue<sensor_msgs::JointState>::Ptr pubJointStatesQueue;
+    /// \brief World pointer.
+private:
+    gazebo::physics::WorldPtr world;
 
-  /// \brief ROS joint state message.
-  private: sensor_msgs::JointState jointStates;
+    /// \brief Parent model of the hand.
+private:
+    gazebo::physics::ModelPtr model;
 
-  /// \brief World pointer.
-  private: gazebo::physics::WorldPtr world;
+    /// \brief Pointer to the SDF of this plugin.
+private:
+    sdf::ElementPtr sdf;
 
-  /// \brief Parent model of the hand.
-  private: gazebo::physics::ModelPtr model;
+    /// \brief Used to select between 'left' or 'right' hand.
+private:
+    std::string side;
 
-  /// \brief Pointer to the SDF of this plugin.
-  private: sdf::ElementPtr sdf;
+    /// \brief Vector containing all the joint names.
+private:
+    std::vector<std::string> jointNames;
 
-  /// \brief Used to select between 'left' or 'right' hand.
-  private: std::string side;
+    /// \brief Vector containing all the actuated finger joints.
+private:
+    gazebo::physics::Joint_V fingerJoints;
 
-  /// \brief Vector containing all the joint names.
-  private: std::vector<std::string> jointNames;
+    /// \brief Vector containing all the joints.
+private:
+    gazebo::physics::Joint_V joints;
 
-  /// \brief Vector containing all the actuated finger joints.
-  private: gazebo::physics::Joint_V fingerJoints;
-
-  /// \brief Vector containing all the joints.
-  private: gazebo::physics::Joint_V joints;
-
-  /// \brief PIDs used to control the finger positions.
-  private: gazebo::common::PID posePID[NumJoints];
+    /// \brief PIDs used to control the finger positions.
+private:
+    gazebo::common::PID posePID[NumJoints];
 };
 
 #endif  // GAZEBO_ROBOTIQ_HAND_PLUGIN_HH

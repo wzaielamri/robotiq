@@ -43,11 +43,11 @@ class ModbusRtuFramer(IModbusFramer):
         """Initialize a new instance of the framer.
         :param decoder: The decoder factory implementation to use
         """
-        self.__buffer = b''
-        self._buffer = b''
+        self.__buffer = b""
+        self._buffer = b""
         self.__header = {}
         self.__hsize = 0x01
-        self.__end = b'\x0d\x0a'
+        self.__end = b"\x0d\x0a"
         self.__min_frame_size = 4
         self.decoder = decoder
 
@@ -60,9 +60,9 @@ class ModbusRtuFramer(IModbusFramer):
         """
         try:
             self.populateHeader()
-            frame_size = self.__header['len']
-            data = self.__buffer[:frame_size - 2]
-            crc = self.__header['crc']
+            frame_size = self.__header["len"]
+            data = self.__buffer[: frame_size - 2]
+            crc = self.__header["crc"]
             crc_val = (int(crc[0]) << 8) + int(crc[1])
             return checkCRC(data, crc_val)
         except (IndexError, KeyError, struct.error):
@@ -74,7 +74,7 @@ class ModbusRtuFramer(IModbusFramer):
         it or determined that it contains an error. It also has to reset the
         current frame header handle
         """
-        self.__buffer = self.__buffer[self.__header['len']:]
+        self.__buffer = self.__buffer[self.__header["len"] :]
         self.__header = {}
 
     def resetFrame(self):  # pylint: disable=invalid-name
@@ -85,7 +85,7 @@ class ModbusRtuFramer(IModbusFramer):
         end of the message (python just doesn't have the resolution to
         check for millisecond delays).
         """
-        self.__buffer = b''
+        self.__buffer = b""
         self.__header = {}
 
     def isFrameReady(self):
@@ -105,16 +105,16 @@ class ModbusRtuFramer(IModbusFramer):
         `self.__buffer` is not yet long enough.
         """
         data = self.__buffer
-        self.__header['uid'] = int(data[0])
+        self.__header["uid"] = int(data[0])
         func_code = int(data[1])
         pdu_class = self.decoder.lookupPduClass(func_code)
         size = pdu_class.calculateRtuFrameSize(data)
-        self.__header['len'] = size
+        self.__header["len"] = size
 
         if len(data) < size:
             # crc yet not available
             raise IndexError
-        self.__header['crc'] = data[size - 2:size]
+        self.__header["crc"] = data[size - 2 : size]
 
     def addToFrame(self, message):
         """Add the received data to the buffer handle.
@@ -127,11 +127,11 @@ class ModbusRtuFramer(IModbusFramer):
         :returns: The frame data or ''
         """
         start = self.__hsize
-        end = self.__header['len'] - 2
+        end = self.__header["len"] - 2
         buffer = self.__buffer[start:end]
         if end > 0:
             return buffer
-        return b''
+        return b""
 
     def populateResult(self, result):
         """Populate the modbus result header.
@@ -139,7 +139,7 @@ class ModbusRtuFramer(IModbusFramer):
         that is copied.
         :param result: The response packet
         """
-        result.unit_id = self.__header['uid']
+        result.unit_id = self.__header["uid"]
 
     # ----------------------------------------------------------------------- #
     # Public Member Functions
@@ -173,8 +173,6 @@ class ModbusRtuFramer(IModbusFramer):
         :param message: The populated request/response to send
         """
         data = message.encode()
-        packet = struct.pack('>BB',
-                             message.unit_id,
-                             message.function_code) + data
+        packet = struct.pack(">BB", message.unit_id, message.function_code) + data
         packet += struct.pack(">H", computeCRC(packet))
         return packet
