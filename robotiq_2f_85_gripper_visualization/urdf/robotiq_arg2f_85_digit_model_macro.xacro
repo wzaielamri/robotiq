@@ -126,6 +126,34 @@
     </link>
   </xacro:macro>
 
+  <!--A full DIGIT has dimensions 20 mm width x 27 mm height x 18 mm depth, and weighs approximately 20 g: based on this i calculated the inertia matrix
+  https://www.seas.upenn.edu/~dineshj/publication/lambeta-2020-digit/lambeta-2020-digit.pdf-->
+  <xacro:macro name="digit" params="prefix fingerprefix">
+  <link concave="yes" name="${prefix}${fingerprefix}_digit">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0.0135"/>
+       <mass value=".02"/>
+       <inertia ixx="2.9875E-8" ixy="0" ixz="0" iyy="1.273E-8" iyz="0" izz="3.2025E-8"/>
+    </inertial>
+    <visual> 
+    <origin xyz="0 0 0" rpy="0 0 -1.57079632679"/>
+      <geometry>
+				<mesh filename="package://sr_digit_launch/meshes/digit/digit.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision concave="yes">
+    <origin xyz="0 0 0" rpy="0  0 -1.57079632679"/>
+      <geometry>
+				<mesh filename="package://sr_digit_launch/meshes/digit/digit.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+  </xacro:macro>
+
+
   <xacro:macro name="outer_finger_joint" params="prefix fingerprefix">
     <joint name="${prefix}${fingerprefix}_outer_finger_joint" type="fixed">
       <origin xyz="0 0.0315 -0.0041" rpy="0 0 0"/>
@@ -143,23 +171,9 @@
       <child link="${prefix}${fingerprefix}_inner_knuckle" />
       <axis xyz="1 0 0" />
       <limit lower="0" upper="0.8757" velocity="2.0" effort="1000" />
-      <!-- <mimic joint="${prefix}finger_joint" multiplier="1" offset="0" /> -->
+      <mimic joint="${prefix}finger_joint" multiplier="1" offset="0" />
     </joint>
-
-    <transmission name="${prefix}${fingerprefix}_inner_knuckle_joint_trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}${fingerprefix}_inner_knuckle_joint">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
-      <actuator name="${prefix}${fingerprefix}_inner_knuckle_joint_motor">
-        <mechanicalReduction>1</mechanicalReduction>
-      </actuator>
-    </transmission>
-
-  <!-- <xacro:mimic_joint_plugin_gazebo name_prefix="inner_knuckle_joint" 
-    parent_joint="${prefix}finger_joint"  mimic_joint="${prefix}${fingerprefix}_inner_knuckle_joint"
-    has_pid="true" multiplier="1.0" max_effort="1000" robot_namespace="robotiq_model" /> -->
-  </xacro:macro> 
+  </xacro:macro>
 
   <xacro:macro name="inner_finger_joint" params="prefix fingerprefix">
     <joint name="${prefix}${fingerprefix}_inner_finger_joint" type="revolute">
@@ -167,26 +181,10 @@
       <parent link="${prefix}${fingerprefix}_outer_finger" />
       <child link="${prefix}${fingerprefix}_inner_finger" />
       <axis xyz="1 0 0" />
-      <limit lower="-0.8757" upper="0" velocity="2.0" effort="1000" />
-      <!--<mimic joint="${prefix}finger_joint" multiplier="-1" offset="0" /> -->
+      <limit lower="0" upper="0.8757" velocity="2.0" effort="1000" />
+      <mimic joint="${prefix}finger_joint" multiplier="-1" offset="0" />
     </joint>
-
-
-    <transmission name="${prefix}${fingerprefix}_inner_finger_joint_trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}${fingerprefix}_inner_finger_joint">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
-      <actuator name="${prefix}${fingerprefix}_inner_finger_joint_motor">
-        <mechanicalReduction>1</mechanicalReduction>
-      </actuator>
-    </transmission>
-
-
-  <!-- <xacro:mimic_joint_plugin_gazebo name_prefix="inner_finger_joint"
-    parent_joint="${prefix}finger_joint"  mimic_joint="${prefix}${fingerprefix}_inner_finger_joint" 
-    has_pid="true" multiplier="-1.0" max_effort="1000" robot_namespace="robotiq_model" /> -->
-  </xacro:macro> 
+  </xacro:macro>
 
   <xacro:macro name="inner_finger_pad_joint" params="prefix fingerprefix">
     <joint name="${prefix}${fingerprefix}_inner_finger_pad_joint" type="fixed">
@@ -197,7 +195,18 @@
     </joint>
   </xacro:macro>
 
-  <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f.xacro" />
+  <!-- I set the joint to revolute so i can get it's contacts as a topic -->
+  <xacro:macro name="digit_joint" params="prefix fingerprefix">
+    <joint name="${prefix}${fingerprefix}_digit_joint" type="revolute">
+      <origin xyz="0 -0.01 0.044" rpy="0 0 0"/>
+      <parent link="${prefix}${fingerprefix}_inner_finger" />
+      <child link="${prefix}${fingerprefix}_digit" />
+      <axis xyz="0 0 1" />
+      <limit effort="0" lower="0" upper="0" velocity="0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_digit.xacro" />
 
   <xacro:macro name="finger_joint" params="prefix">
     <joint name="${prefix}finger_joint" type="revolute">
@@ -217,45 +226,10 @@
       <child link="${prefix}right_outer_knuckle" />
       <axis xyz="1 0 0" />
       <limit lower="0" upper="0.81" velocity="2.0" effort="1000" />
-      <!--<mimic joint="${prefix}finger_joint" multiplier="1" offset="0" /> -->
+      <mimic joint="${prefix}finger_joint" multiplier="1" offset="0" />
     </joint>
-
-    <transmission name="${prefix}right_outer_knuckle_joint_trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}right_outer_knuckle_joint">
-        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      </joint>
-      <actuator name="${prefix}right_outer_knuckle_joint_motor">
-        <mechanicalReduction>1</mechanicalReduction>
-      </actuator>
-    </transmission>
-
-
-
     <xacro:finger_joints prefix="${prefix}" fingerprefix="right" reflect="-1.0"/>
-    <!-- <xacro:mimic_joint_plugin_gazebo name_prefix="right_outer_knuckle_joint"
-      parent_joint="${prefix}finger_joint"  mimic_joint="${prefix}right_outer_knuckle_joint"
-      has_pid="true" multiplier="1.0" max_effort="1000" robot_namespace="robotiq_model" /> -->
   </xacro:macro>
-
-   <xacro:macro name="mimic_joint_plugin_gazebo" params="name_prefix parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
-    <gazebo>
-      <plugin name="${name_prefix}mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
-        <joint>${parent_joint}</joint>
-        <mimicJoint>${mimic_joint}</mimicJoint>
-        <xacro:if value="${has_pid}">                     <!-- if set to true, PID parameters from "/gazebo_ros_control/pid_gains/${mimic_joint}" are loaded -->
-          <hasPID />
-        </xacro:if>
-        <multiplier>${multiplier}</multiplier>
-        <offset>${offset}</offset>
-        <sensitiveness>${sensitiveness}</sensitiveness>   <!-- if absolute difference between setpoint and process value is below this threshold, do nothing; 0.0 = disable [rad] -->
-        <maxEffort>${max_effort}</maxEffort>              <!-- only taken into account if has_pid:=true [Nm] -->
-        <xacro:unless value="${robot_namespace == ''}">
-          <robotNamespace>${robot_namespace}</robotNamespace>
-        </xacro:unless>
-      </plugin>
-    </gazebo>
-  </xacro:macro> 
 
   <!-- Initialization of all joints and links -->
   <xacro:macro name="robotiq_arg2f_85" params="prefix">
