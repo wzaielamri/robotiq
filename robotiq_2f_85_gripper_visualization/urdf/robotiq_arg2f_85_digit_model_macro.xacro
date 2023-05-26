@@ -113,7 +113,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://sr_digit_launch/meshes/digit/digit_adapter_edited.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://digit_gazebo_launch/meshes/digit/digit_adapter_edited.dae" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="">
           <color rgba="0.1 0.1 0.1 1" />
@@ -122,7 +122,7 @@
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://sr_digit_launch/meshes/digit/digit_adapter_edited.dae" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://digit_gazebo_launch/meshes/digit/digit_adapter_edited.dae" scale="0.001 0.001 0.001"/>
         </geometry>
       </collision>
     </link>
@@ -165,7 +165,7 @@
     <visual> 
     <origin xyz="0 0.0135  0.012" rpy="0 -1.57079632679 1.57079632679"/>
       <geometry>
-				<mesh filename="package://sr_digit_launch/meshes/digit/digit.STL" scale="1 1 1"/>
+				<mesh filename="package://digit_gazebo_launch/meshes/digit/digit.STL" scale="1 1 1"/>
       </geometry>
       <material name="white">
         <color rgba="1 1 1 1"/>
@@ -174,7 +174,7 @@
     <collision concave="yes">
     <origin xyz="0 0.0135  0.012" rpy="0 -1.57079632679 1.57079632679"/>
       <geometry>
-				<mesh filename="package://sr_digit_launch/meshes/digit/digit.STL" scale="1 1 1"/>
+				<mesh filename="package://digit_gazebo_launch/meshes/digit/digit.STL" scale="1 1 1"/>
       </geometry>
     </collision>
   </link>
