@@ -255,7 +255,7 @@
     <link name="digit_link">
     </link>
         <joint name="digit_link_joint" type="fixed">
-      <origin xyz="0 -0.018 0.06" rpy="0 -1.57079632679 1.57079632679"/>
+      <origin xyz="0 0 0" rpy="0 -1.57079632679 1.57079632679"/>
       <parent link="${prefix}${fingerprefix}_digit" />
       <child link="digit_link" />
     </joint>
