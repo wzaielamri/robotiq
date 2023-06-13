@@ -36,7 +36,7 @@
     <xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
     <xacro:arg name="arm_prefix" default="ra" />
     <xacro:arg name="hand_prefix" default="" />
-    <xacro:arg name="robot_model" default="ur10e"/>
+    <xacro:arg name="robot_model" default="ur5e"/>
     <xacro:arg name="kinematics_config" default="$(find ur_description)/config/$(arg robot_model)/default_kinematics.yaml"/>
     <xacro:include filename="$(find ur_description)/urdf/inc/$(arg robot_model)_macro.xacro"/>
     <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/table_macro.xacro"/>
