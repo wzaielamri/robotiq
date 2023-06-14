@@ -83,8 +83,14 @@
     <!-- Create the Robotiq wrist camera --> 
     
     <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_ur5e_wrist_cam.xacro" />
-    <xacro:robotiq_wrist_camera parent="$(arg hand_prefix)robotiq_arg2f_base_link" prefix="$(arg hand_prefix)">
+    <xacro:robotiq_wrist_camera parent="$(arg hand_prefix)robotiq_arg2f_base_link" cam_prefix="_0" visual_flag="false">
+        <origin xyz="-0.07 0 0.02" rpy="0 -1.1 0"/>
     </xacro:robotiq_wrist_camera>
+
+    <xacro:robotiq_wrist_camera parent="world" cam_prefix="_1" visual_flag="true">
+        <origin xyz="0.6 0 1.5" rpy="${pi} ${3*pi/4} 0"/>
+    </xacro:robotiq_wrist_camera>
+
 
     <!-- Create the Robotiq 2F-85 gripper --> 
 
