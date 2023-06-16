@@ -21,19 +21,16 @@
   <material name="white">
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>
-
   <xacro:macro name="robotiq_wrist_camera" params="parent cam_prefix visual_flag *origin">
     <xacro:property name="camera_link" value="0.05" /> <!-- Size of square 'camera' box -->
     <link name="camera_link${cam_prefix}">
-        <xacro:if value="${visual_flag == 'true'}">
+        <xacro:if value="${visual_flag}">
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
                     <box size="${camera_link} ${camera_link} ${camera_link}"/>
                 </geometry>
             </collision>
-        </xacro:if>
-        <xacro:if value="${visual_flag == 'true'}">
             <visual>            
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>

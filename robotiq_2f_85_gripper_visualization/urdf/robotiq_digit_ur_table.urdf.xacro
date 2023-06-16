@@ -70,10 +70,9 @@
         <child link="$(arg arm_prefix)_base_link"/>
         <origin xyz="-0.5 0 0.63" rpy="0 0 0"/>
     </joint>
-    
-    
+
     <xacro:robotiq_ft300 parent="$(arg arm_prefix)_flange" prefix="">
-      <origin xyz="-0.005 0.0 0.0" rpy="${pi/2.0} ${pi/2.0} ${pi/2.0}"/>
+        <origin xyz="-0.005 0.0 0.0" rpy="${pi/2.0} ${pi/2.0} ${pi/2.0}"/>
     </xacro:robotiq_ft300>
 
     <xacro:robotiq_arg2f_85 prefix="$(arg hand_prefix)"/>

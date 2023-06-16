@@ -76,14 +76,11 @@
       <origin xyz="-0.005 0.0 0.0" rpy="${pi/2.0} ${pi/2.0} ${pi/2.0}"/>
     </xacro:robotiq_ft300>
 
-
-
-
     <!-- Camera -->
     <!-- Create the Robotiq wrist camera --> 
     
     <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_ur5e_wrist_cam.xacro" />
-    <xacro:robotiq_wrist_camera parent="$(arg hand_prefix)robotiq_arg2f_base_link" cam_prefix="_0" visual_flag="false">
+    <xacro:robotiq_wrist_camera parent="ft300_mounting_plate" cam_prefix="_0" visual_flag="true">
         <origin xyz="-0.07 0 0.02" rpy="0 -1.1 0"/>
     </xacro:robotiq_wrist_camera>
 
@@ -100,9 +97,7 @@
         <parent link="ft300_sensor"/>
         <child link="$(arg hand_prefix)robotiq_arg2f_base_link"/>
         <origin xyz="0.0 0.0 0.0" rpy="0 ${pi} 0"/>
-    </joint>
-
-
+    </joint>y
 
     <gazebo reference="ra_wrist_3_joint">
         <provideFeedback>true</provideFeedback>
