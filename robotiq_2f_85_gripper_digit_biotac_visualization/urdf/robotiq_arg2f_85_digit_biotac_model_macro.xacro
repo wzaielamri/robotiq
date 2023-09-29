@@ -157,28 +157,42 @@
   https://www.seas.upenn.edu/~dineshj/publication/lambeta-2020-digit/lambeta-2020-digit.pdf-->
   
   <xacro:macro name="digit" params="prefix fingerprefix">
-  <link concave="yes" name="${prefix}${fingerprefix}_digit">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-       <mass value=".02"/>
-       <inertia ixx="2.9875E-8" ixy="0" ixz="0" iyy="1.273E-8" iyz="0" izz="3.2025E-8"/>
-    </inertial> 
-    <visual> 
-    <origin xyz="0 0  0" rpy="0 -1.57079632679 1.57079632679"/>
-      <geometry>
-				<mesh filename="package://digit_gazebo_launch/meshes/digit/digit.STL" scale="1 1 1"/>
-      </geometry>
-      <material name="white">
-        <color rgba="1 1 1 1"/>
-      </material>
-    </visual>
-    <collision concave="yes">
-    <origin xyz="0 0  0" rpy="0 -1.57079632679 1.57079632679"/>
-      <geometry>
-				<mesh filename="package://digit_gazebo_launch/meshes/digit/digit.STL" scale="1 1 1"/>
-      </geometry>
-    </collision>
-  </link>
+    <link concave="yes" name="${prefix}${fingerprefix}_digit">
+      <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <mass value=".02"/>
+        <inertia ixx="2.9875E-8" ixy="0" ixz="0" iyy="1.273E-8" iyz="0" izz="3.2025E-8"/>
+      </inertial> 
+      <visual> 
+      <origin xyz="0 0  0" rpy="0 -1.57079632679 1.57079632679"/>
+        <geometry>
+          <mesh filename="package://digit_gazebo_launch/meshes/digit/digit.STL" scale="1 1 1"/>
+        </geometry>
+        <material name="white">
+          <color rgba="1 1 1 1"/>
+        </material>
+      </visual>
+      <collision concave="yes">
+      <origin xyz="0 0  0" rpy="0 -1.57079632679 1.57079632679"/>
+        <geometry>
+          <mesh filename="package://digit_gazebo_launch/meshes/digit/digit.STL" scale="1 1 1"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}${fingerprefix}_digit_joint" type="fixed">
+      <origin xyz="0 0.002 0.0465" rpy="0 0 0"/>
+      <parent link="${prefix}${fingerprefix}_inner_finger" />
+      <child link="${prefix}${fingerprefix}_digit" />
+    </joint>
+
+    <link name="digit_link">
+    </link>
+    <joint name="digit_link_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 -1.57079632679 1.57079632679"/>
+      <parent link="${prefix}${fingerprefix}_digit" />
+      <child link="digit_link" />
+    </joint>
   </xacro:macro>
 
   <xacro:macro name="biotac_macro" params="prefix fingerprefix">
@@ -210,14 +224,12 @@
 
     <joint name="biotac_edited_joint" type="fixed">
     <!-- if connected to digit: <origin xyz="0 0.02 0.02" rpy="${pi/2 - 0.3490658503989} ${pi} 0"/>-->
-    <!-- if connected to finger: <origin xyz="0 0.021 0.0675" rpy="${pi/2 - 0.3490658503989} ${pi} ${0}"/>-->
+    <!-- if connected to finger: <origin xyz="0.0 0.021 0.0675" rpy="${pi/2 - 0.3490658503989} ${pi} ${0}"/>-->
       <origin xyz="0.0 0.021 0.0675" rpy="${pi/2 - 0.3490658503989} ${pi} ${0}"/>
       <parent link="${prefix}${fingerprefix}_inner_finger" />
       <child link="biotac_sensor_edited" />
     </joint>
     <joint name="sim_biotac_tf_dummy_joint" type="fixed">
-    <!-- if connected to digit: <origin xyz="0 0.02 0.02" rpy="${pi/2 - 0.3490658503989} ${pi} 0"/>-->
-    <!-- if connected to finger: <origin xyz="0 0.021 0.0675" rpy="${pi/2 - 0.3490658503989} ${pi} ${0}"/>-->
       <origin xyz="0.0 0.0 -0.008" rpy="0 0 0"/>
       <parent link="biotac_sensor_edited" />
       <child link="sim_biotac_tf_dummy" />
@@ -288,23 +300,6 @@
     </joint>
   </xacro:macro>
 
-  <!-- I set the joint to revolute so i can get it's contacts as a topic -->
-  <xacro:macro name="digit_joint" params="prefix fingerprefix">
-    <joint name="${prefix}${fingerprefix}_digit_joint" type="fixed">
-      <origin xyz="0 0.002 0.0465" rpy="0 0 0"/>
-      <parent link="${prefix}${fingerprefix}_inner_finger" />
-      <child link="${prefix}${fingerprefix}_digit" />
-    </joint>
-
-    <link name="digit_link">
-    </link>
-    <joint name="digit_link_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="0 -1.57079632679 1.57079632679"/>
-      <parent link="${prefix}${fingerprefix}_digit" />
-      <child link="digit_link" />
-    </joint>
-
-  </xacro:macro>
 
   <xacro:include filename="$(find robotiq_2f_85_gripper_digit_biotac_visualization)/urdf/robotiq_arg2f_digit_biotac.xacro" />
 
@@ -349,9 +344,8 @@
     <xacro:finger_joint prefix="${prefix}"/>
     <xacro:right_outer_knuckle_joint prefix="${prefix}"/>
     <!-- Digit only on the left finger -->
-    <!--<xacro:digit prefix="${prefix}" fingerprefix="left"/>
-    <xacro:digit_joint prefix="${prefix}" fingerprefix="left"/> -->
-    <xacro:biotac_macro prefix="${prefix}" fingerprefix="left"/> 
+    <!--<xacro:digit prefix="${prefix}" fingerprefix="left"/>-->
+    <xacro:biotac_macro prefix="${prefix}" fingerprefix="left"/>
     <xacro:robotiq_arg2f_transmission prefix="${prefix}"/>
   </xacro:macro>
 </robot>
